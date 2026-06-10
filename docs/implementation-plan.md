@@ -29,25 +29,25 @@
 
 ## Phase 2: DTO/VO 契约定义
 
-- [ ] **P0** 定义枚举类
+- [x] **P0** 定义枚举类
   - 依赖：无
   - 产出：`CourseStatus`, `EnrollmentStatus`, `PaymentStatus`, `PaymentMethod`
-- [ ] **P0** 定义访客端 DTO/VO
+- [x] **P0** 定义访客端 DTO/VO
   - 依赖：枚举类完成
   - 产出：`EnrollmentSubmitDTO`, `PublicCourseVO`, `PublicCourseDetailVO`, `EnrollmentSubmitVO`
-- [ ] **P0** 定义管理员登录 DTO/VO
+- [x] **P0** 定义管理员登录 DTO/VO
   - 依赖：无
   - 产出：`AdminLoginDTO`, `AdminLoginVO`
-- [ ] **P0** 定义管理员课程 DTO/VO
+- [x] **P0** 定义管理员课程 DTO/VO
   - 依赖：枚举类完成
   - 产出：`CourseCreateDTO`, `CourseUpdateDTO`, `AdminCourseVO`
-- [ ] **P0** 定义管理员报名 DTO/VO
+- [x] **P0** 定义管理员报名 DTO/VO
   - 依赖：枚举类完成
   - 产出：`EnrollmentStatusDTO`, `AdminEnrollmentVO`
-- [ ] **P0** 定义管理员缴费 DTO/VO
+- [x] **P0** 定义管理员缴费 DTO/VO
   - 依赖：枚举类完成
   - 产出：`PaymentCreateDTO`, `PaymentRecordVO`
-- [ ] **P0** 定义仪表盘和财务 VO
+- [x] **P0** 定义仪表盘和财务 VO
   - 依赖：无
   - 产出：`DashboardOverviewVO`, `RecentEnrollmentVO`, `FinanceSummaryVO`
 
@@ -319,7 +319,7 @@ Phase 1 (初始化)
 | 阶段 | 总任务数 | 已完成 | 进度 |
 |------|----------|--------|------|
 | Phase 1: 项目初始化 | 5 | 5 | 100% |
-| Phase 2: DTO/VO 契约 | 7 | 0 | 0% |
+| Phase 2: DTO/VO 契约 | 7 | 7 | 100% |
 | Phase 3: Entity + Service | 7 | 0 | 0% |
 | Phase 4: Mapper | 5 | 0 | 0% |
 | Phase 5: Controller | 10 | 0 | 0% |
@@ -329,4 +329,4 @@ Phase 1 (初始化)
 | Phase 9: 后端测试 | 10 | 0 | 0% |
 | Phase 10: 集成测试 | 3 | 0 | 0% |
 | Phase 11: 收尾 | 5 | 0 | 0% |
-| **合计** | **68** | **5** | **7.4%** |
+| **合计** | **68** | **12** | **17.6%** |

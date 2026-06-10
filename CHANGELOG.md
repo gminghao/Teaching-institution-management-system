@@ -19,6 +19,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0
 - 创建工具函数（`utils/auth.js`、`utils/format.js`）
 - 创建布局组件（`PublicLayout.vue`、`AdminLayout.vue`）
 - 创建占位页面组件（访客端 4 页 + 管理员端 5 页）
+- 定义枚举类（`CourseStatus`, `EnrollmentStatus`, `PaymentStatus`, `PaymentMethod`）
+- 定义访客端 DTO/VO（`EnrollmentSubmitDTO`, `PublicCourseVO`, `PublicCourseDetailVO`, `EnrollmentSubmitVO`）
+- 定义管理员登录 DTO/VO（`AdminLoginDTO`, `AdminLoginVO`）
+- 定义管理员课程 DTO/VO（`CourseCreateDTO`, `CourseUpdateDTO`, `AdminCourseVO`）
+- 定义管理员报名 DTO/VO（`EnrollmentStatusDTO`, `AdminEnrollmentVO`）
+- 定义管理员缴费 DTO/VO（`PaymentCreateDTO`, `PaymentRecordVO`）
+- 定义仪表盘和财务 VO（`DashboardOverviewVO`, `RecentEnrollmentVO`, `FinanceSummaryVO`）
 
 ### Planned
 
