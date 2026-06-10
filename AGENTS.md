@@ -1,4 +1,4 @@
-# CLAUDE.md
+# AGENTS.md
 
 ## Project Overview
 
@@ -14,8 +14,6 @@
 * 系统需要完成基本测试、部署，并为课程设计总结报告提供架构设计、数据库设计、接口设计、测试用例和缺陷记录依据。
 
 ---
-
-**Status**: 规划阶段 — backend/ 和 frontend/ 尚未创建，验证命令将在代码实现后生效。
 
 ## Build And Test
 
@@ -571,7 +569,7 @@ Documentation targets:
 ```txt
 README.md
 CHANGELOG.md
-CLAUDE.md
+AGENTS.md
 docs/
 ```
 
@@ -784,10 +782,10 @@ rtk wget <url>          # Compact download output (65%)
 ```bash
 rtk gain                # View token savings statistics
 rtk gain --history      # View command history with savings
-rtk discover            # Analyze Claude Code sessions for missed RTK usage
+rtk discover            # Analyze Codex sessions for missed RTK usage
 rtk proxy <cmd>         # Run command without filtering (for debugging)
-rtk init                # Add RTK instructions to CLAUDE.md
-rtk init --global       # Add RTK to ~/.claude/CLAUDE.md
+rtk init                # Add RTK instructions to AGENTS.md
+rtk init --global       # Add RTK to ~/.Codex/AGENTS.md
 ```
 
 ## Token Savings Overview

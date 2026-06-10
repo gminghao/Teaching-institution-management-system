@@ -6,7 +6,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0
 
 ## [Unreleased]
 
-### Added
+### Planned
 
 - 项目初始化，搭建前后端工程骨架
 - 数据库建表脚本（admin_user、course_category、course、enrollment_order、payment_record）
