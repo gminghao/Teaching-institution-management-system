@@ -9,19 +9,19 @@
 
 ## Phase 1: 项目初始化与基础设施
 
-- [ ] **P0** 初始化 Spring Boot 3 后端工程骨架 (`backend/`)
+- [x] **P0** 初始化 Spring Boot 3 后端工程骨架 (`backend/`)
   - 依赖：无
   - 产出：pom.xml, application.yml, 主启动类
-- [ ] **P0** 初始化 Vue 3 前端工程骨架 (`frontend/`)
+- [x] **P0** 初始化 Vue 3 前端工程骨架 (`frontend/`)
   - 依赖：无
   - 产出：package.json, vite.config.js, main.js, App.vue
-- [ ] **P0** 配置数据库连接和 MyBatis-Plus
+- [x] **P0** 配置数据库连接和 MyBatis-Plus
   - 依赖：Phase 1 初始化完成
   - 产出：application.yml 数据源配置, MyBatis-Plus 配置类
-- [ ] **P0** 配置 Vite 开发代理 (前端 `/api` -> 后端 8080)
+- [x] **P0** 配置 Vite 开发代理 (前端 `/api` -> 后端 8080)
   - 依赖：前端初始化完成
   - 产出：vite.config.js proxy 配置
-- [ ] **P0** 创建统一响应包装类 `Result<T>` 和 `PageResult<T>`
+- [x] **P0** 创建统一响应包装类 `Result<T>` 和 `PageResult<T>`
   - 依赖：后端初始化完成
   - 产出：`Result.java`, `PageResult.java`
 
@@ -290,7 +290,7 @@ Phase 1 (初始化)
 
 | 阶段 | 总任务数 | 已完成 | 进度 |
 |------|----------|--------|------|
-| Phase 1: 项目初始化 | 5 | 0 | 0% |
+| Phase 1: 项目初始化 | 5 | 5 | 100% |
 | Phase 2: DTO/VO 契约 | 7 | 0 | 0% |
 | Phase 3: Entity + Service | 7 | 0 | 0% |
 | Phase 4: Mapper | 5 | 0 | 0% |
@@ -301,4 +301,4 @@ Phase 1 (初始化)
 | Phase 9: 后端测试 | 10 | 0 | 0% |
 | Phase 10: 集成测试 | 3 | 0 | 0% |
 | Phase 11: 收尾 | 5 | 0 | 0% |
-| **合计** | **68** | **0** | **0%** |
+| **合计** | **68** | **5** | **7.4%** |

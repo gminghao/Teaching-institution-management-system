@@ -15,8 +15,6 @@
 
 ---
 
-**Status**: 规划阶段 — backend/ 和 frontend/ 尚未创建，验证命令将在代码实现后生效。
-
 ## Build And Test
 
 Use the following commands unless explicitly changed by the user:

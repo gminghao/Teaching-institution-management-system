@@ -6,9 +6,22 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0
 
 ## [Unreleased]
 
+### Added
+
+- 初始化 Spring Boot 3 后端工程骨架（`backend/`），包含 pom.xml、application.yml、主启动类
+- 初始化 Vue 3 前端工程骨架（`frontend/`），包含 package.json、vite.config.js、main.js、App.vue
+- 配置数据库连接和 MyBatis-Plus（分页插件、驼峰映射、逻辑删除）
+- 配置 Vite 开发代理（`/api` → 后端 8080 端口）
+- 创建统一响应包装类 `Result<T>` 和 `PageResult<T>`
+- 创建前端路由配置（含导航守卫）
+- 创建 Axios 请求封装（Token 注入、统一错误处理）
+- 创建 API 接口封装（`api/public.js`、`api/admin.js`）
+- 创建工具函数（`utils/auth.js`、`utils/format.js`）
+- 创建布局组件（`PublicLayout.vue`、`AdminLayout.vue`）
+- 创建占位页面组件（访客端 4 页 + 管理员端 5 页）
+
 ### Planned
 
-- 项目初始化，搭建前后端工程骨架
 - 数据库建表脚本（admin_user、course_category、course、enrollment_order、payment_record）
 - 管理员登录功能（JWT 鉴权）
 - 课程管理功能（CRUD + 上下架）
