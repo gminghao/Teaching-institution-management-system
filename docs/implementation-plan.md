@@ -286,6 +286,34 @@ Phase 1 (初始化)
 
 ---
 
+## 注意事项（Code Review 记录）
+
+> 以下为 Phase 1 Code Review 发现的问题，需在后续阶段修复。
+
+### 安全问题
+
+- [ ] **JWT Secret 硬编码**：`application.yml` 中 `jwt.secret` 应改为环境变量注入（Phase 3 AuthService 时处理）
+  - 当前值：`course-manager-jwt-secret-key-2026-must-be-at-least-256-bits`
+  - 目标：`${JWT_SECRET:default-dev-only-key}`
+- [ ] **数据库密码硬编码**：`application.yml` 中 `spring.datasource.password: root` 应改为环境变量
+  - 目标：`${DB_PASSWORD:root}`
+
+### 代码健壮性
+
+- [ ] **前端 `getUser()` 缺少异常处理**：`localStorage` 中若存储了非法 JSON，`JSON.parse` 会抛异常
+  - 文件：`frontend/src/utils/auth.js`
+  - 修复：添加 try-catch，解析失败返回 null
+- [ ] **前端 `request.js` 响应拦截器**：假设所有响应都是 `{code, message, data}` 格式
+  - 风险：文件下载、健康检查等非标准响应会误判为错误
+  - 修复：对 `responseType === 'blob'` 等场景做豁免
+
+### 待补充
+
+- [ ] **404 路由**：`router/index.js` 缺少 catch-all 路由（`/:pathMatch(.*)*`），需添加 404 页面
+- [ ] **生产日志级别**：`application.yml` 中 `log-impl: StdOutImpl` 生产环境应改为 Slf4j
+
+---
+
 ## 进度统计
 
 | 阶段 | 总任务数 | 已完成 | 进度 |
