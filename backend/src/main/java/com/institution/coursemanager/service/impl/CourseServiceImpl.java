@@ -259,11 +259,16 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
         return dateTime == null ? null : dateTime.format(DATE_TIME_FORMATTER);
     }
 
+    private static final int MAX_PAGE_SIZE = 100;
+
     private long normalizePageNum(Integer pageNum) {
         return pageNum == null || pageNum < 1 ? DEFAULT_PAGE_NUM : pageNum;
     }
 
     private long normalizePageSize(Integer pageSize) {
-        return pageSize == null || pageSize < 1 ? DEFAULT_PAGE_SIZE : pageSize;
+        if (pageSize == null || pageSize < 1) {
+            return DEFAULT_PAGE_SIZE;
+        }
+        return Math.min(pageSize, MAX_PAGE_SIZE);
     }
 }

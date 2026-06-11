@@ -31,8 +31,8 @@ public class AdminEnrollmentController {
     @GetMapping
     public Result<PageResult<AdminEnrollmentVO>> list(
             @RequestParam(required = false) String keyword,
-            @RequestParam(required = false) String enrollmentStatus,
             @RequestParam(required = false) String paymentStatus,
+            @RequestParam(required = false) String enrollmentStatus,
             @RequestParam(defaultValue = "1") Integer pageNum,
             @RequestParam(defaultValue = "10") Integer pageSize) {
         return Result.success(enrollmentService.getEnrollmentList(
