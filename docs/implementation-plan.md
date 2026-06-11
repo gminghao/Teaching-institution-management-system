@@ -101,34 +101,34 @@
 
 ## Phase 5: Controller 层
 
-- [ ] **P0** 实现全局异常处理器 `GlobalExceptionHandler`
+- [x] **P0** 实现全局异常处理器 `GlobalExceptionHandler`
   - 依赖：异常类定义完成
   - 产出：`GlobalExceptionHandler.java`
-- [ ] **P0** 实现 JWT 拦截器 `AdminAuthInterceptor`
+- [x] **P0** 实现 JWT 拦截器 `AdminAuthInterceptor`
   - 依赖：AuthService 完成
   - 产出：`AdminAuthInterceptor.java`, `WebMvcConfig.java`
-- [ ] **P0** 实现 PublicCourseController
+- [x] **P0** 实现 PublicCourseController
   - 依赖：CourseService 完成
   - 产出：`PublicCourseController.java`
-- [ ] **P0** 实现 PublicEnrollmentController
+- [x] **P0** 实现 PublicEnrollmentController
   - 依赖：EnrollmentService 完成
   - 产出：`PublicEnrollmentController.java`
-- [ ] **P0** 实现 AdminAuthController
+- [x] **P0** 实现 AdminAuthController
   - 依赖：AuthService 完成
   - 产出：`AdminAuthController.java`
-- [ ] **P0** 实现 AdminDashboardController
+- [x] **P0** 实现 AdminDashboardController
   - 依赖：DashboardService 完成
   - 产出：`AdminDashboardController.java`
-- [ ] **P0** 实现 AdminCourseController
+- [x] **P0** 实现 AdminCourseController
   - 依赖：CourseService 完成
   - 产出：`AdminCourseController.java`
-- [ ] **P0** 实现 AdminEnrollmentController
+- [x] **P0** 实现 AdminEnrollmentController
   - 依赖：EnrollmentService 完成
   - 产出：`AdminEnrollmentController.java`
-- [ ] **P0** 实现 AdminPaymentController
+- [x] **P0** 实现 AdminPaymentController
   - 依赖：PaymentService 完成
   - 产出：`AdminPaymentController.java`
-- [ ] **P0** 实现 AdminFinanceController
+- [x] **P0** 实现 AdminFinanceController
   - 依赖：FinanceService 完成
   - 产出：`AdminFinanceController.java`
 
@@ -162,16 +162,16 @@
 
 ## Phase 7: 访客端页面 (Vue 3)
 
-- [ ] **P0** 实现 HomePage.vue
+- [x] **P0** 实现 HomePage.vue
   - 依赖：PublicLayout, api/public.js
   - 产出：`views/public/HomePage.vue`
-- [ ] **P0** 实现 CourseListPage.vue
+- [x] **P0** 实现 CourseListPage.vue
   - 依赖：PublicLayout, api/public.js
   - 产出：`views/public/CourseListPage.vue`
-- [ ] **P0** 实现 CourseDetailPage.vue
+- [x] **P0** 实现 CourseDetailPage.vue
   - 依赖：PublicLayout, api/public.js
   - 产出：`views/public/CourseDetailPage.vue`
-- [ ] **P0** 实现 EnrollmentPage.vue
+- [x] **P0** 实现 EnrollmentPage.vue
   - 依赖：PublicLayout, api/public.js
   - 产出：`views/public/EnrollmentPage.vue`
 
@@ -179,19 +179,19 @@
 
 ## Phase 8: 管理员端页面 (Vue 3)
 
-- [ ] **P0** 实现 LoginPage.vue
+- [x] **P0** 实现 LoginPage.vue
   - 依赖：api/admin.js, utils/auth.js
   - 产出：`views/admin/LoginPage.vue`
-- [ ] **P0** 实现 DashboardPage.vue
+- [x] **P0** 实现 DashboardPage.vue
   - 依赖：AdminLayout, api/admin.js
   - 产出：`views/admin/DashboardPage.vue`
-- [ ] **P0** 实现 CourseManagePage.vue
+- [x] **P0** 实现 CourseManagePage.vue
   - 依赖：AdminLayout, api/admin.js
   - 产出：`views/admin/CourseManagePage.vue`
-- [ ] **P0** 实现 EnrollmentManagePage.vue
+- [x] **P0** 实现 EnrollmentManagePage.vue
   - 依赖：AdminLayout, api/admin.js
   - 产出：`views/admin/EnrollmentManagePage.vue`
-- [ ] **P0** 实现 FinancePage.vue
+- [x] **P0** 实现 FinancePage.vue
   - 依赖：AdminLayout, api/admin.js
   - 产出：`views/admin/FinancePage.vue`
 
@@ -322,11 +322,11 @@ Phase 1 (初始化)
 | Phase 2: DTO/VO 契约 | 7 | 7 | 100% |
 | Phase 3: Entity + Service | 7 | 7 | 100% |
 | Phase 4: Mapper | 5 | 5 | 100% |
-| Phase 5: Controller | 10 | 0 | 0% |
+| Phase 5: Controller | 10 | 10 | 100% |
 | Phase 6: 前端基础 | 7 | 7 | 100% |
-| Phase 7: 访客页面 | 4 | 0 | 0% |
-| Phase 8: 管理页面 | 5 | 0 | 0% |
+| Phase 7: 访客页面 | 4 | 4 | 100% |
+| Phase 8: 管理页面 | 5 | 5 | 100% |
 | Phase 9: 后端测试 | 10 | 0 | 0% |
 | Phase 10: 集成测试 | 3 | 0 | 0% |
 | Phase 11: 收尾 | 5 | 0 | 0% |
-| **合计** | **68** | **31** | **45.6%** |
+| **合计** | **68** | **50** | **73.5%** |

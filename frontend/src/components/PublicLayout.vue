@@ -12,8 +12,7 @@
         <nav class="public-nav" aria-label="公共导航">
           <router-link to="/">首页</router-link>
           <router-link to="/courses">课程列表</router-link>
-          <a href="#about">关于我们</a>
-          <router-link to="/admin/login">管理登录</router-link>
+          <router-link to="/admin/login">管理后台体验</router-link>
         </nav>
 
         <el-button class="enroll-button" type="primary" @click="goEnrollment">
@@ -26,17 +25,28 @@
       <router-view />
     </main>
 
-    <footer id="about" class="public-footer">
+    <footer class="public-footer">
       <div class="public-footer__inner">
         <section>
           <h2>卓越学术机构</h2>
-          <p>通过严谨的课程体系与清晰的报名管理，帮助小型教学机构完成课程宣传、报名转化和收费统计。</p>
+          <p>通过严谨的学术卓越表现培养下一代行业领导者。</p>
+          <small>&copy; 2026 Academic Distinction Institute. 保留所有权利。</small>
         </section>
-        <nav aria-label="页脚导航">
-          <router-link to="/">首页</router-link>
-          <router-link to="/courses">课程列表</router-link>
-          <router-link to="/admin/login">管理后台</router-link>
-        </nav>
+        <div class="footer-column">
+          <h3>机构</h3>
+          <router-link to="/">关于我们</router-link>
+          <router-link to="/">领导团队</router-link>
+        </div>
+        <div class="footer-column">
+          <h3>资源</h3>
+          <router-link to="/">校园地图</router-link>
+          <router-link to="/">学生门户</router-link>
+        </div>
+        <div class="footer-column">
+          <h3>法律</h3>
+          <router-link to="/">联系我们</router-link>
+          <router-link to="/">隐私政策</router-link>
+        </div>
       </div>
     </footer>
   </div>
@@ -164,10 +174,10 @@ const goEnrollment = () => {
 .public-footer__inner {
   width: min(100% - 48px, var(--container-width));
   margin: 0 auto;
-  padding: 48px 0;
-  display: flex;
-  justify-content: space-between;
-  gap: 40px;
+  padding: 64px 0;
+  display: grid;
+  grid-template-columns: 1.15fr repeat(3, minmax(150px, 1fr));
+  gap: 32px;
 }
 
 .public-footer h2 {
@@ -178,16 +188,29 @@ const goEnrollment = () => {
 }
 
 .public-footer p {
-  max-width: 520px;
   margin: 0;
   color: var(--color-text-muted);
   line-height: 1.7;
 }
 
-.public-footer nav {
+.public-footer small {
+  display: block;
+  margin-top: 24px;
+  color: var(--color-text-muted);
+}
+
+.footer-column {
   display: flex;
-  gap: 28px;
-  align-items: flex-start;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.footer-column h3 {
+  margin: 0;
+  color: var(--color-text);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0;
 }
 
 .public-footer a {
@@ -240,11 +263,7 @@ const goEnrollment = () => {
   }
 
   .public-footer__inner {
-    flex-direction: column;
-  }
-
-  .public-footer nav {
-    flex-wrap: wrap;
+    grid-template-columns: 1fr;
   }
 }
 </style>

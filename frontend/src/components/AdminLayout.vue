@@ -52,9 +52,7 @@
             <span>搜索课程、订单或学员...</span>
           </div>
           <div class="admin-user">
-            <span class="admin-user__avatar">
-              {{ usernameInitial }}
-            </span>
+            <img class="admin-user__avatar" :src="referenceImages.adminProfile" alt="管理员头像">
             <span class="admin-user__name">{{ username }}</span>
           </div>
         </div>
@@ -80,6 +78,7 @@ import {
   Search,
   SwitchButton
 } from '@element-plus/icons-vue'
+import { referenceImages } from '@/data/mock'
 
 const route = useRoute()
 const router = useRouter()
@@ -90,8 +89,6 @@ const username = computed(() => {
   const user = getUser()
   return user?.realName || user?.username || '管理员'
 })
-
-const usernameInitial = computed(() => username.value.slice(0, 1).toUpperCase())
 
 const pageTitles = {
   '/admin/dashboard': '控制台',
@@ -273,11 +270,9 @@ const handleLogout = () => {
 .admin-user__avatar {
   width: 36px;
   height: 36px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: #ffffff;
-  background: var(--color-primary);
+  display: block;
+  object-fit: cover;
+  border: 1px solid var(--color-border);
   border-radius: var(--radius-pill);
 }
 

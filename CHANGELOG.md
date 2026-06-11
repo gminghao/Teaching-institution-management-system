@@ -18,7 +18,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0
 - 创建 API 接口封装（`api/public.js`、`api/admin.js`）
 - 创建工具函数（`utils/auth.js`、`utils/format.js`）
 - 创建布局组件（`PublicLayout.vue`、`AdminLayout.vue`）
-- 创建占位页面组件（访客端 4 页 + 管理员端 5 页）
+- 创建并实现访客端页面（首页、课程列表、课程详情、课程报名）
+- 创建并实现管理员端页面（登录、控制台、课程管理、报名管理、财务管理）
 - 定义枚举类（`CourseStatus`, `EnrollmentStatus`, `PaymentStatus`, `PaymentMethod`）
 - 定义访客端 DTO/VO（`EnrollmentSubmitDTO`, `PublicCourseVO`, `PublicCourseDetailVO`, `EnrollmentSubmitVO`）
 - 定义管理员登录 DTO/VO（`AdminLoginDTO`, `AdminLoginVO`）
@@ -32,11 +33,18 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0
 - 创建 JWT 工具类（`JwtUtil`）
 - 完善 Mapper 接口（`AdminUserMapper`, `CourseCategoryMapper`, `CourseMapper`, `EnrollmentOrderMapper`, `PaymentRecordMapper`）
 - 新增 CourseMapper.xml 联表查询映射
+- 实现全局异常处理器（`GlobalExceptionHandler`）
+- 实现 JWT 认证拦截器（`AdminAuthInterceptor`）
+- 实现访客端 Controller（`PublicCourseController`, `PublicEnrollmentController`）
+- 实现管理员端 Controller（`AdminAuthController`, `AdminDashboardController`, `AdminCourseController`, `AdminEnrollmentController`, `AdminPaymentController`, `AdminFinanceController`）
 - 修复前端 404 路由（`/:pathMatch(.*)*`）
 - 修复 Axios blob 响应豁免
 - 修复 `getUser()` JSON 解析异常处理
 - 新增 404 页面（`NotFoundPage.vue`）
 - 新增全局样式文件（`assets/styles/main.css`）
+- 按 `docs/设计参考` 的 Academic Distinction 设计实现 Vue 前端视觉风格
+- 新增本地参考图片资源（`frontend/src/assets/reference/`），替换页面热链图片
+- 新增前端参考 Mock 数据模块（`frontend/src/data/mock.js`）
 
 ### Fixed
 
@@ -47,6 +55,4 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0
 - 数据库建表脚本（admin_user、course_category、course、enrollment_order、payment_record）
 - Mapper 持久层完善（XML 映射）
 - Controller 层实现
-- 访客页面实现（HomePage, CourseListPage, CourseDetailPage, EnrollmentPage）
-- 管理员页面实现（LoginPage, DashboardPage, CourseManagePage, EnrollmentManagePage, FinancePage）
 - 后端测试完善
