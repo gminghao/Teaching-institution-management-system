@@ -109,10 +109,10 @@
   - 产出：`AdminAuthInterceptor.java`, `WebMvcConfig.java`
 - [x] **P0** 实现 PublicCourseController
   - 依赖：CourseService 完成
-  - 产出：`PublicCourseController.java`
+  - 产出：`controller/visitor/PublicCourseController.java`（注：public 是 Java 保留关键字，改用 visitor）
 - [x] **P0** 实现 PublicEnrollmentController
   - 依赖：EnrollmentService 完成
-  - 产出：`PublicEnrollmentController.java`
+  - 产出：`controller/visitor/PublicEnrollmentController.java`
 - [x] **P0** 实现 AdminAuthController
   - 依赖：AuthService 完成
   - 产出：`AdminAuthController.java`
