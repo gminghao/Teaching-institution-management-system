@@ -199,36 +199,36 @@
 
 ## Phase 9: 后端测试
 
-- [ ] **P0** 管理员登录测试 (TC-LOGIN-01 ~ TC-LOGIN-08)
+- [x] **P0** 管理员登录测试 (TC-LOGIN-01 ~ TC-LOGIN-08)
   - 依赖：AdminAuthController 完成
   - 产出：`AdminAuthControllerTest.java`
-- [ ] **P0** 课程 CRUD 测试 (TC-COURSE-01 ~ TC-COURSE-08)
+- [x] **P0** 课程 CRUD 测试 (TC-COURSE-01 ~ TC-COURSE-08)
   - 依赖：AdminCourseController, PublicCourseController 完成
   - 产出：`AdminCourseControllerTest.java`, `PublicCourseControllerTest.java`
-- [ ] **P0** 课程上下架测试 (TC-COURSE-09 ~ TC-COURSE-14)
+- [x] **P0** 课程上下架测试 (TC-COURSE-09 ~ TC-COURSE-14)
   - 依赖：AdminCourseController 完成
   - 产出：包含在 `AdminCourseControllerTest.java`
-- [ ] **P0** 访客课程列表测试 (TC-COURSE-15 ~ TC-COURSE-19)
+- [x] **P0** 访客课程列表测试 (TC-COURSE-15 ~ TC-COURSE-19)
   - 依赖：PublicCourseController 完成
   - 产出：`PublicCourseControllerTest.java`
-- [ ] **P0** 报名提交测试 (TC-ENROLL-01 ~ TC-ENROLL-10)
+- [x] **P0** 报名提交测试 (TC-ENROLL-01 ~ TC-ENROLL-10)
   - 依赖：PublicEnrollmentController 完成
   - 产出：`PublicEnrollmentControllerTest.java`
-- [ ] **P0** 报名状态修改测试 (TC-STATUS-01 ~ TC-STATUS-10)
+- [x] **P0** 报名状态修改测试 (TC-STATUS-01 ~ TC-STATUS-10)
   - 依赖：AdminEnrollmentController 完成
   - 产出：`AdminEnrollmentControllerTest.java`
-- [ ] **P0** 缴费登记测试 (TC-PAY-01 ~ TC-PAY-10)
+- [x] **P0** 缴费登记测试 (TC-PAY-01 ~ TC-PAY-10)
   - 依赖：AdminPaymentController 完成
   - 产出：`AdminPaymentControllerTest.java`
-- [ ] **P0** 仪表盘统计测试 (TC-DASH-01 ~ TC-DASH-07)
+- [x] **P0** 仪表盘统计测试 (TC-DASH-01 ~ TC-DASH-07)
   - 依赖：AdminDashboardController 完成
   - 产出：`AdminDashboardControllerTest.java`
-- [ ] **P0** 财务汇总测试 (TC-FIN-01 ~ TC-FIN-04)
+- [x] **P0** 财务汇总测试 (TC-FIN-01 ~ TC-FIN-04)
   - 依赖：AdminFinanceController 完成
   - 产出：`AdminFinanceControllerTest.java`
-- [ ] **P1** Service 层单元测试
+- [x] **P1** Service 层单元测试
   - 依赖：所有 Service 完成
-  - 产出：各 `*ServiceImplTest.java`
+  - 产出：`EnrollmentServiceImplTest.java`
 
 ---
 
@@ -372,8 +372,8 @@ Phase 1 (初始化)
 | Phase 6: 前端基础 | 7 | 7 | 100% |
 | Phase 7: 访客页面 | 4 | 4 | 100% |
 | Phase 8: 管理页面 | 5 | 5 | 100% |
-| Phase 9: 后端测试 | 10 | 0 | 0% |
+| Phase 9: 后端测试 | 10 | 10 | 100% |
 | Phase 10: 集成测试 | 3 | 0 | 0% |
 | Phase 11: 收尾 | 5 | 0 | 0% |
 | Phase 12: 代码审查修复 | 10 | 8 | 80% |
-| **合计** | **78** | **58** | **74.4%** |
+| **合计** | **78** | **68** | **87.2%** |
