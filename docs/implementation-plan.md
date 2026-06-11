@@ -288,29 +288,75 @@ Phase 1 (初始化)
 
 ## 注意事项（Code Review 记录）
 
-> 以下为 Phase 1 Code Review 发现的问题，需在后续阶段修复。
+> 以下为代码审查发现的问题，需在后续阶段修复。
 
-### 安全问题
+### 安全问题（P1）
 
-- [ ] **JWT Secret 硬编码**：`application.yml` 中 `jwt.secret` 应改为环境变量注入（Phase 3 AuthService 时处理）
+- [ ] **JWT Secret 硬编码**：`application.yml` 中 `jwt.secret` 应改为环境变量注入
   - 当前值：`course-manager-jwt-secret-key-2026-must-be-at-least-256-bits`
   - 目标：`${JWT_SECRET:default-dev-only-key}`
 - [ ] **数据库密码硬编码**：`application.yml` 中 `spring.datasource.password: root` 应改为环境变量
   - 目标：`${DB_PASSWORD:root}`
+- [ ] **CORS 配置过宽**：`WebMvcConfig.java` 中 `allowedOriginPatterns("*")` 应限制具体域名
+- [ ] **访客报名接口缺少频率限制**：`PublicEnrollmentController` 需要添加 Rate Limiting
 
-### 代码健壮性
+### 代码健壮性（P1）
 
-- [ ] **前端 `getUser()` 缺少异常处理**：`localStorage` 中若存储了非法 JSON，`JSON.parse` 会抛异常
-  - 文件：`frontend/src/utils/auth.js`
-  - 修复：添加 try-catch，解析失败返回 null
-- [ ] **前端 `request.js` 响应拦截器**：假设所有响应都是 `{code, message, data}` 格式
-  - 风险：文件下载、健康检查等非标准响应会误判为错误
-  - 修复：对 `responseType === 'blob'` 等场景做豁免
+- [ ] **课程创建未校验 categoryId**：`CourseServiceImpl.createCourse()` 需要验证分类是否存在
+- [ ] **课程删除未检查关联订单**：`CourseServiceImpl.deleteCourse()` 需要检查是否存在未完结报名
 
-### 待补充
+### 性能优化（P1）
 
-- [ ] **404 路由**：`router/index.js` 缺少 catch-all 路由（`/:pathMatch(.*)*`），需添加 404 页面
-- [ ] **生产日志级别**：`application.yml` 中 `log-impl: StdOutImpl` 生产环境应改为 Slf4j
+- [x] **财务汇总全表加载**：`FinanceServiceImpl` 已改用 SQL 聚合查询 ✅
+- [x] **分页大小无上限**：`CourseServiceImpl`/`EnrollmentServiceImpl` 已添加 MAX_PAGE_SIZE=100 ✅
+- [ ] **课程查询 N+1**：`CourseServiceImpl.getCategoryName()` 应改为批量查询或缓存
+- [ ] **SQL 日志输出**：`application.yml` 中 `log-impl: StdOutImpl` 生产环境应改为 Slf4j
+
+### 已修复问题 ✅
+
+- [x] **参数顺序错误**：`AdminEnrollmentController` 中 enrollmentStatus/paymentStatus 参数顺序已修复
+- [x] **前端 getUser() 异常处理**：`utils/auth.js` 已添加 try-catch
+- [x] **前端 request.js blob 豁免**：已添加 `responseType === 'blob'` 豁免
+- [x] **404 路由**：已添加 `/:pathMatch(.*)*` 路由和 NotFoundPage.vue
+
+---
+
+## Phase 12: 代码审查修复
+
+> 代码审查发现的问题修复任务
+
+### 后端修复
+
+- [x] **P0** 修复 AdminEnrollmentController 参数顺序
+  - 依赖：无
+  - 产出：`AdminEnrollmentController.java`
+- [x] **P0** FinanceServiceImpl 改用 SQL 聚合查询
+  - 依赖：无
+  - 产出：`FinanceServiceImpl.java`, `EnrollmentOrderMapper.java`
+- [x] **P0** 分页大小添加上限约束
+  - 依赖：无
+  - 产出：`CourseServiceImpl.java`, `EnrollmentServiceImpl.java`
+- [ ] **P1** JWT Secret 环境变量化
+  - 依赖：无
+  - 产出：`application.yml`, `JwtUtil.java`
+- [ ] **P1** 数据库密码环境变量化
+  - 依赖：无
+  - 产出：`application.yml`
+- [ ] **P1** 课程创建校验 categoryId
+  - 依赖：无
+  - 产出：`CourseServiceImpl.java`
+- [ ] **P1** 课程删除检查关联订单
+  - 依赖：无
+  - 产出：`CourseServiceImpl.java`
+
+### 前端修复
+
+- [ ] **P0** 前端登录对接后端 API
+  - 依赖：后端接口可用
+  - 产出：`LoginPage.vue`
+- [ ] **P0** 所有页面对接后端 API
+  - 依赖：后端接口可用
+  - 产出：所有页面组件
 
 ---
 
@@ -329,4 +375,5 @@ Phase 1 (初始化)
 | Phase 9: 后端测试 | 10 | 0 | 0% |
 | Phase 10: 集成测试 | 3 | 0 | 0% |
 | Phase 11: 收尾 | 5 | 0 | 0% |
-| **合计** | **68** | **50** | **73.5%** |
+| Phase 12: 代码审查修复 | 10 | 3 | 30% |
+| **合计** | **78** | **53** | **67.9%** |
