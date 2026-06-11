@@ -25,6 +25,11 @@ request.interceptors.request.use(
 // 响应拦截器：统一错误处理
 request.interceptors.response.use(
   response => {
+    // 处理 blob 下载豁免
+    if (response.config.responseType === 'blob') {
+      return response
+    }
+    
     const res = response.data
     if (res.code !== 200) {
       ElMessage.error(res.message || '请求失败')

@@ -55,25 +55,25 @@
 
 ## Phase 3: Entity 模型 + Service 业务逻辑
 
-- [ ] **P0** 实现 Entity 模型类
+- [x] **P0** 实现 Entity 模型类
   - 依赖：数据库设计文档
   - 产出：`AdminUser`, `CourseCategory`, `Course`, `EnrollmentOrder`, `PaymentRecord`
-- [ ] **P0** 实现 AuthService（登录认证 + JWT 生成/校验）
+- [x] **P0** 实现 AuthService（登录认证 + JWT 生成/校验）
   - 依赖：Entity 完成, AdminLoginDTO/VO 完成
   - 产出：`AuthService`, `AuthServiceImpl`
-- [ ] **P0** 实现 CourseService（CRUD + 上下架 + 逻辑删除）
+- [x] **P0** 实现 CourseService（CRUD + 上下架 + 逻辑删除）
   - 依赖：Entity 完成, 课程 DTO/VO 完成
   - 产出：`CourseService`, `CourseServiceImpl`
-- [ ] **P0** 实现 EnrollmentService（报名提交 + 状态流转）
+- [x] **P0** 实现 EnrollmentService（报名提交 + 状态流转）
   - 依赖：Entity 完成, 报名 DTO/VO 完成
   - 产出：`EnrollmentService`, `EnrollmentServiceImpl`
-- [ ] **P0** 实现 PaymentService（缴费登记 + 事务管理）
+- [x] **P0** 实现 PaymentService（缴费登记 + 事务管理）
   - 依赖：Entity 完成, 缴费 DTO/VO 完成
   - 产出：`PaymentService`, `PaymentServiceImpl`
-- [ ] **P0** 实现 DashboardService（仪表盘聚合统计）
+- [x] **P0** 实现 DashboardService（仪表盘聚合统计）
   - 依赖：Entity 完成
   - 产出：`DashboardService`, `DashboardServiceImpl`
-- [ ] **P0** 实现 FinanceService（财务汇总）
+- [x] **P0** 实现 FinanceService（财务汇总）
   - 依赖：Entity 完成
   - 产出：`FinanceService`, `FinanceServiceImpl`
 
@@ -136,25 +136,25 @@
 
 ## Phase 6: 前端基础设施
 
-- [ ] **P0** 配置 Vue Router 路由表
+- [x] **P0** 配置 Vue Router 路由表
   - 依赖：前端初始化完成
   - 产出：`router/index.js` (路由定义 + 导航守卫)
-- [ ] **P0** 实现 Axios 请求封装 + 拦截器
+- [x] **P0** 实现 Axios 请求封装 + 拦截器
   - 依赖：前端初始化完成
   - 产出：`api/request.js` (token 注入, 响应拦截, 错误处理)
-- [ ] **P0** 实现 API 接口封装
+- [x] **P0** 实现 API 接口封装
   - 依赖：request.js 完成
   - 产出：`api/public.js`, `api/admin.js`
-- [ ] **P0** 实现 Token 管理工具
+- [x] **P0** 实现 Token 管理工具
   - 依赖：无
   - 产出：`utils/auth.js` (getToken, setToken, removeToken)
-- [ ] **P0** 实现格式化工具
+- [x] **P0** 实现格式化工具
   - 依赖：无
   - 产出：`utils/format.js` (金额格式化, 日期格式化)
-- [ ] **P0** 实现 PublicLayout 组件
+- [x] **P0** 实现 PublicLayout 组件
   - 依赖：路由配置完成
   - 产出：`components/PublicLayout.vue` (顶部导航 + 内容区 + 页脚)
-- [ ] **P0** 实现 AdminLayout 组件
+- [x] **P0** 实现 AdminLayout 组件
   - 依赖：路由配置完成
   - 产出：`components/AdminLayout.vue` (侧边栏 + 顶栏 + 内容区)
 
@@ -320,13 +320,13 @@ Phase 1 (初始化)
 |------|----------|--------|------|
 | Phase 1: 项目初始化 | 5 | 5 | 100% |
 | Phase 2: DTO/VO 契约 | 7 | 7 | 100% |
-| Phase 3: Entity + Service | 7 | 0 | 0% |
+| Phase 3: Entity + Service | 7 | 7 | 100% |
 | Phase 4: Mapper | 5 | 0 | 0% |
 | Phase 5: Controller | 10 | 0 | 0% |
-| Phase 6: 前端基础 | 7 | 0 | 0% |
+| Phase 6: 前端基础 | 7 | 7 | 100% |
 | Phase 7: 访客页面 | 4 | 0 | 0% |
 | Phase 8: 管理页面 | 5 | 0 | 0% |
 | Phase 9: 后端测试 | 10 | 0 | 0% |
 | Phase 10: 集成测试 | 3 | 0 | 0% |
 | Phase 11: 收尾 | 5 | 0 | 0% |
-| **合计** | **68** | **12** | **17.6%** |
+| **合计** | **68** | **26** | **38.2%** |

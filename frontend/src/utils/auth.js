@@ -15,7 +15,14 @@ export function removeToken() {
 
 export function getUser() {
   const user = localStorage.getItem(USER_KEY)
-  return user ? JSON.parse(user) : null
+  if (!user) return null
+  
+  try {
+    return JSON.parse(user)
+  } catch (error) {
+    console.error('Failed to parse user from local storage:', error)
+    return null
+  }
 }
 
 export function setUser(user) {

@@ -66,6 +66,12 @@ const routes = [
         component: () => import('@/views/admin/FinancePage.vue')
       }
     ]
+  },
+  // 404路由
+  {
+    path: '/:pathMatch(.*)*',
+    name: 'NotFound',
+    component: () => import('@/views/NotFoundPage.vue')
   }
 ]
 
