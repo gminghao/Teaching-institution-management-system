@@ -345,6 +345,62 @@
 * Rollback method: Delete file.
 * Pitfall: UNKNOWN.
 
+### Phase 12: Code Review Fixes
+
+* Path: `backend/src/main/java/com/institution/coursemanager/controller/admin/AdminEnrollmentController.java`
+* Change type: MODIFY
+* Key change: Fixed parameter order (paymentStatus, enrollmentStatus).
+* Core logic: Corrected argument passing to match Service signature.
+* Dependency impact: None.
+* Risk point: None.
+* Rollback method: `git restore backend/src/main/java/com/institution/coursemanager/controller/admin/AdminEnrollmentController.java`
+* Pitfall: UNKNOWN.
+
+* Path: `backend/src/main/java/com/institution/coursemanager/service/impl/FinanceServiceImpl.java`
+* Change type: MODIFY
+* Key change: Replaced full table load with SQL aggregation.
+* Core logic: Uses `selectFinanceSummary()` instead of `list()`.
+* Dependency impact: Depends on EnrollmentOrderMapper.
+* Risk point: None.
+* Rollback method: `git restore backend/src/main/java/com/institution/coursemanager/service/impl/FinanceServiceImpl.java`
+* Pitfall: UNKNOWN.
+
+* Path: `backend/src/main/java/com/institution/coursemanager/mapper/EnrollmentOrderMapper.java`
+* Change type: MODIFY
+* Key change: Added `selectFinanceSummary()` aggregation query.
+* Core logic: SQL SUM/COUNT with CASE for status breakdown.
+* Dependency impact: Used by FinanceServiceImpl.
+* Risk point: None.
+* Rollback method: `git restore backend/src/main/java/com/institution/coursemanager/mapper/EnrollmentOrderMapper.java`
+* Pitfall: UNKNOWN.
+
+* Path: `backend/src/main/java/com/institution/coursemanager/service/impl/CourseServiceImpl.java`
+* Change type: MODIFY
+* Key change: Added page size limit (MAX_PAGE_SIZE=100) and categoryId validation.
+* Core logic: `Math.min(pageSize, MAX_PAGE_SIZE)`, validate category exists before create.
+* Dependency impact: Uses CourseCategoryMapper.
+* Risk point: None.
+* Rollback method: `git restore backend/src/main/java/com/institution/coursemanager/service/impl/CourseServiceImpl.java`
+* Pitfall: UNKNOWN.
+
+* Path: `backend/src/main/java/com/institution/coursemanager/service/impl/EnrollmentServiceImpl.java`
+* Change type: MODIFY
+* Key change: Added page size limit (MAX_PAGE_SIZE=100).
+* Core logic: `Math.min(pageSize, MAX_PAGE_SIZE)`.
+* Dependency impact: None.
+* Risk point: None.
+* Rollback method: `git restore backend/src/main/java/com/institution/coursemanager/service/impl/EnrollmentServiceImpl.java`
+* Pitfall: UNKNOWN.
+
+* Path: `backend/src/main/resources/application.yml`
+* Change type: MODIFY
+* Key change: Environment variables for JWT secret and DB credentials.
+* Core logic: `${JWT_SECRET:...}`, `${DB_USERNAME:root}`, `${DB_PASSWORD:root}`.
+* Dependency impact: None.
+* Risk point: Default values used if env vars not set.
+* Rollback method: `git restore backend/src/main/resources/application.yml`
+* Pitfall: UNKNOWN.
+
 ---
 
 ## 3. Current verification status (PASS / FAIL / NOT RUN)
