@@ -1,0 +1,185 @@
+-- ============================================================
+-- 教学机构课程管理系统 - 模拟数据
+-- 导入顺序: 先执行 database/schema.sql，再执行本文件
+-- 字符集: utf8mb4
+-- ============================================================
+-- 机构名称: 明智成长教育中心
+-- 宣传语: 让学习更实用，让成长更清晰
+-- 地址: 福建省漳州市芗城区文创路88号启航教育园B座305室
+-- 联系方式: 0596-2688106 / contact@mingzhi-training.example.com
+
+SET NAMES utf8mb4;
+USE course_manager;
+
+-- ============================================================
+-- 课程分类
+-- ============================================================
+INSERT INTO `course_category` (`id`, `name`, `sort_order`, `status`, `create_time`, `update_time`) VALUES
+(1, '人工智能', 1, 1, '2026-06-11 00:00:00', '2026-06-11 00:00:00'),
+(2, '编程开发', 2, 1, '2026-06-11 00:00:00', '2026-06-11 00:00:00'),
+(3, '数据分析', 3, 1, '2026-06-11 00:00:00', '2026-06-11 00:00:00'),
+(4, 'UI 设计', 4, 1, '2026-06-11 00:00:00', '2026-06-11 00:00:00'),
+(5, '办公软件', 5, 1, '2026-06-11 00:00:00', '2026-06-11 00:00:00'),
+(6, '企业管理', 6, 1, '2026-06-11 00:00:00', '2026-06-11 00:00:00'),
+(7, '少儿编程', 7, 1, '2026-06-11 00:00:00', '2026-06-11 00:00:00')
+ON DUPLICATE KEY UPDATE
+  `name` = VALUES(`name`),
+  `sort_order` = VALUES(`sort_order`),
+  `status` = VALUES(`status`),
+  `update_time` = VALUES(`update_time`);
+
+-- ============================================================
+-- 课程
+-- ============================================================
+INSERT INTO `course` (`id`, `category_id`, `title`, `subtitle`, `cover_image`, `description`, `teacher_name`, `price`, `registration_fee`, `status`, `deleted`, `create_time`, `update_time`) VALUES
+(1, 1, '人工智能应用与大模型基础', '混合 · 10周 · 40课时', '/assets/reference/course-ai-foundation.jpg', '面向零基础学员的大模型与人工智能应用入门课程。
+
+课程从人工智能基础概念、常见应用场景、提示词编写、办公自动化应用和简单项目实践入手，帮助学员理解大模型工具在学习、办公和业务中的实际使用方式。
+
+适合人群：大学生、职场新人、希望了解人工智能工具的学习者
+
+学习目标：理解人工智能与大模型的基本概念；掌握常见 AI 工具的使用方法；完成一个 AI 辅助办公小项目
+
+图片提示词：Realistic photo of a modern classroom for an artificial intelligence course, students working on laptops, bright natural light, clean education environment, professional training institution style, no text, no watermark, no logo, no distorted people, high resolution', '林泽远', 6800, 680, 'ONLINE', 0, '2026-06-11 00:00:00', '2026-06-11 00:00:00'),
+(2, 2, 'Java Web 全栈开发入门', '线下 · 12周 · 60课时', '/assets/reference/course-java-web.jpg', '以 Java、Spring Boot 和数据库为核心的 Web 开发基础课程。
+
+课程围绕后端接口开发、数据库设计、基础前端页面联调和项目部署展开，适合希望完成课程设计或入门企业级 Web 开发的学员。
+
+适合人群：计算机相关专业学生、Java 初学者、课程设计项目开发者
+
+学习目标：掌握 Java Web 项目的基本结构；能够完成增删改查接口开发；独立实现一个小型管理系统
+
+图片提示词：Realistic photo of a professional software development training classroom, students coding Java web applications on laptops, bright natural light, clean desks, modern education center, no text, no watermark, no logo, no distorted people, high resolution', '许清岚', 7600, 760, 'ONLINE', 0, '2026-06-11 00:00:00', '2026-06-11 00:00:00'),
+(3, 3, 'Python 数据分析实战', '线上 · 8周 · 36课时', '/assets/reference/course-python-data.jpg', '使用 Python、Pandas 和图表工具完成数据处理与分析展示。
+
+课程包含数据读取、数据清洗、统计分析、可视化图表和分析报告撰写，强调通过真实风格的模拟数据完成完整分析流程。
+
+适合人群：经管类学生、数据分析初学者、办公数据处理人员
+
+学习目标：掌握 Python 数据处理基础；能够使用 Pandas 完成常见统计分析；输出清晰的数据图表和分析结论
+
+图片提示词：Realistic photo of a data analysis training session, learners viewing charts on laptop screens, bright classroom, professional education environment, clean and modern workspace, no text, no watermark, no logo, no distorted people, high resolution', '周景宁', 5200, 520, 'ONLINE', 0, '2026-06-11 00:00:00', '2026-06-11 00:00:00'),
+(4, 4, 'UI 设计与 Figma 原型实训', '混合 · 8周 · 32课时', '/assets/reference/course-ui-figma.jpg', '面向初学者的界面设计、组件规范和交互原型课程。
+
+课程从版式、色彩、组件设计、移动端页面设计和交互原型制作入手，帮助学员完成一套教育类或管理类系统界面作品。
+
+适合人群：设计初学者、前端开发者、需要制作项目界面的学生
+
+学习目标：理解 UI 设计基本规范；能够使用 Figma 制作页面原型；完成一套可展示的系统界面设计稿
+
+图片提示词：Realistic photo of a UI design workshop, students designing interface prototypes on laptops and tablets, bright studio classroom, clean professional education space, no text, no watermark, no logo, no distorted people, high resolution', '陈若溪', 4800, 480, 'ONLINE', 0, '2026-06-11 00:00:00', '2026-06-11 00:00:00'),
+(5, 5, 'Office 办公自动化提升班', '线下 · 4周 · 20课时', '/assets/reference/course-office.jpg', '提升 Word、Excel、PPT 和办公效率工具的实用能力。
+
+课程覆盖文档排版、表格统计、函数应用、演示文稿制作和常见办公自动化场景，适合希望快速提升办公效率的学员。
+
+适合人群：职场新人、行政人员、大学生、需要提升办公技能的学习者
+
+学习目标：掌握常用办公软件核心操作；能够完成规范文档和数据表格；提升日常办公处理效率
+
+图片提示词：Realistic photo of an office software training class, adults learning spreadsheets and presentations on laptops, bright meeting room, clean professional training institution style, no text, no watermark, no logo, no distorted people, high resolution', '韩立文', 1800, 180, 'ONLINE', 0, '2026-06-11 00:00:00', '2026-06-11 00:00:00'),
+(6, 6, '企业数字化管理实务', '混合 · 6周 · 24课时', '/assets/reference/course-business-management.jpg', '面向中小企业管理者的数字化流程与运营管理课程。
+
+课程讲解企业信息化基础、流程梳理、客户管理、数据看板和基础运营分析，帮助学员理解数字化工具如何服务企业管理。
+
+适合人群：中小企业管理者、创业团队成员、行政运营人员
+
+学习目标：理解企业数字化管理的基本框架；掌握流程梳理和数据看板思路；完成一个基础运营管理方案
+
+图片提示词：Realistic photo of a business management training seminar, small group discussion with laptops and notebooks, bright professional classroom, modern corporate education style, no text, no watermark, no logo, no distorted people, high resolution', '孟思远', 3600, 360, 'ONLINE', 0, '2026-06-11 00:00:00', '2026-06-11 00:00:00'),
+(7, 7, 'Scratch 少儿编程启蒙', '线下 · 10周 · 30课时', '/assets/reference/course-scratch-kids.jpg', '通过图形化编程培养孩子的逻辑思维和创造力。
+
+课程采用趣味项目教学方式，引导孩子完成动画、小游戏和互动故事，帮助建立基础编程思维。
+
+适合人群：8 至 12 岁儿童、少儿编程初学者
+
+学习目标：理解顺序、循环和条件判断；能够制作简单动画和小游戏；培养基础逻辑表达能力
+
+图片提示词：Realistic photo of a children''s coding classroom, kids learning visual programming with tablets and laptops, bright safe learning environment, friendly education institution style, no text, no watermark, no logo, no distorted people, high resolution', '白宁', 2980, 300, 'ONLINE', 0, '2026-06-11 00:00:00', '2026-06-11 00:00:00'),
+(8, 2, 'Vue 前端开发项目班', '线上 · 10周 · 48课时', '/assets/reference/course-vue-frontend.jpg', '围绕 Vue、组件化开发和前端项目实战的基础课程。
+
+课程包含 Vue 基础语法、组件设计、路由管理、接口请求和管理后台页面开发，适合希望掌握现代前端项目开发流程的学员。
+
+适合人群：前端初学者、课程设计开发者、希望补充 Vue 技能的学生
+
+学习目标：掌握 Vue 项目基本开发流程；能够实现课程列表和管理后台页面；完成一个前端项目展示作品
+
+图片提示词：Realistic photo of a frontend development course, students building web interfaces on laptops, bright modern classroom, clean professional training center, no text, no watermark, no logo, no distorted people, high resolution', '苏启航', 6200, 620, 'ONLINE', 0, '2026-06-11 00:00:00', '2026-06-11 00:00:00')
+ON DUPLICATE KEY UPDATE
+  `category_id` = VALUES(`category_id`),
+  `title` = VALUES(`title`),
+  `subtitle` = VALUES(`subtitle`),
+  `cover_image` = VALUES(`cover_image`),
+  `description` = VALUES(`description`),
+  `teacher_name` = VALUES(`teacher_name`),
+  `price` = VALUES(`price`),
+  `registration_fee` = VALUES(`registration_fee`),
+  `status` = VALUES(`status`),
+  `deleted` = VALUES(`deleted`),
+  `update_time` = VALUES(`update_time`);
+
+-- ============================================================
+-- 报名订单
+-- ============================================================
+INSERT INTO `enrollment_order` (`id`, `order_no`, `course_id`, `course_title`, `student_name`, `student_phone`, `student_email`, `remark`, `registration_fee`, `paid_amount`, `payment_status`, `enrollment_status`, `create_time`, `update_time`) VALUES
+(1, 'ENR-202606-001', 1, '人工智能应用与大模型基础', '邓可欣', '19900001001', 'kexin.deng@example.com', '已提交报名信息，等待管理员确认班级名额', 680, 680, 'PARTIAL', 'PENDING', '2026-06-01 10:30:00', '2026-06-01 10:30:00'),
+(2, 'ENR-202606-002', 2, 'Java Web 全栈开发入门', '沈嘉铭', '19900001002', 'jiaming.shen@example.com', '已缴清费用，已分配周末班', 760, 7600, 'PAID', 'ENROLLED', '2026-06-01 11:15:00', '2026-06-01 11:15:00'),
+(3, 'ENR-202606-003', 3, 'Python 数据分析实战', '何雨澄', '19900001003', 'yucheng.he@example.com', '已完成缴费，选择线上晚间班', 520, 5200, 'PAID', 'ENROLLED', '2026-06-01 15:40:00', '2026-06-01 15:40:00'),
+(4, 'ENR-202606-004', 1, '人工智能应用与大模型基础', '梁书瑶', '19900001004', 'shuyao.liang@example.com', '咨询后提交报名，暂未缴纳报名费', 680, 0, 'UNPAID', 'PENDING', '2026-06-02 09:10:00', '2026-06-02 09:10:00'),
+(5, 'ENR-202606-005', 4, 'UI 设计与 Figma 原型实训', '赵晨曦', '19900001005', 'chenxi.zhao@example.com', '已缴报名费，尾款开课前缴纳', 480, 480, 'PARTIAL', 'ENROLLED', '2026-06-02 13:25:00', '2026-06-02 13:25:00'),
+(6, 'ENR-202606-006', 5, 'Office 办公自动化提升班', '杨浩然', '19900001006', 'haoran.yang@example.com', '企业团训学员，已确认到课时间', 180, 1800, 'PAID', 'ENROLLED', '2026-06-02 16:05:00', '2026-06-02 16:05:00'),
+(7, 'ENR-202606-007', 6, '企业数字化管理实务', '程思琪', '19900001007', 'siqi.cheng@example.com', '已缴报名费，等待开课通知', 360, 360, 'PARTIAL', 'PENDING', '2026-06-03 10:45:00', '2026-06-03 10:45:00'),
+(8, 'ENR-202606-008', 7, 'Scratch 少儿编程启蒙', '马宇航', '19900001008', 'yuhang.ma@example.com', '家长已确认周六上午班', 300, 2980, 'PAID', 'ENROLLED', '2026-06-03 14:30:00', '2026-06-03 14:30:00'),
+(9, 'ENR-202606-009', 3, 'Python 数据分析实战', '徐安然', '19900001009', 'anran.xu@example.com', '需要管理员电话确认学习基础', 520, 0, 'UNPAID', 'PENDING', '2026-06-04 09:55:00', '2026-06-04 09:55:00'),
+(10, 'ENR-202606-010', 8, 'Vue 前端开发项目班', '孙明哲', '19900001010', 'mingzhe.sun@example.com', '已缴清费用，计划参加线上班', 620, 6200, 'PAID', 'ENROLLED', '2026-06-04 15:20:00', '2026-06-04 15:20:00'),
+(11, 'ENR-202606-011', 1, '人工智能应用与大模型基础', '林若彤', '19900001011', 'ruotong.lin@example.com', '已缴报名费，等待确认上课时间', 680, 680, 'PARTIAL', 'PENDING', '2026-06-05 10:05:00', '2026-06-05 10:05:00'),
+(12, 'ENR-202606-012', 5, 'Office 办公自动化提升班', '郭子昂', '19900001012', 'ziang.guo@example.com', '本期班级人数已满，建议选择下一期', 180, 0, 'UNPAID', 'CANCELLED', '2026-06-05 14:45:00', '2026-06-05 14:45:00'),
+(13, 'ENR-202606-013', 2, 'Java Web 全栈开发入门', '唐亦凡', '19900001013', 'yifan.tang@example.com', '已缴报名费，计划分两次缴纳课程费', 760, 760, 'PARTIAL', 'ENROLLED', '2026-06-06 09:30:00', '2026-06-06 09:30:00'),
+(14, 'ENR-202606-014', 3, 'Python 数据分析实战', '叶知秋', '19900001014', 'zhiqiu.ye@example.com', '学员个人时间冲突，已取消报名', 520, 0, 'UNPAID', 'CANCELLED', '2026-06-06 16:20:00', '2026-06-06 16:20:00'),
+(15, 'ENR-202606-015', 6, '企业数字化管理实务', '秦雅宁', '19900001015', 'yaning.qin@example.com', '单位统一缴费，等待财务确认', 360, 0, 'UNPAID', 'ENROLLED', '2026-06-07 11:10:00', '2026-06-07 11:10:00'),
+(16, 'ENR-202606-016', 7, 'Scratch 少儿编程启蒙', '罗星辰', '19900001016', 'xingchen.luo@example.com', '家长需要确认试听安排', 300, 0, 'UNPAID', 'PENDING', '2026-06-08 17:25:00', '2026-06-08 17:25:00'),
+(17, 'ENR-202606-017', 8, 'Vue 前端开发项目班', '钟一鸣', '19900001017', 'yiming.zhong@example.com', '已审核通过，待缴纳报名费', 620, 0, 'UNPAID', 'ENROLLED', '2026-06-09 09:35:00', '2026-06-09 09:35:00'),
+(18, 'ENR-202606-018', 4, 'UI 设计与 Figma 原型实训', '胡婉清', '19900001018', 'wanqing.hu@example.com', '报名资料不完整，需重新提交', 480, 0, 'UNPAID', 'CANCELLED', '2026-06-09 15:10:00', '2026-06-09 15:10:00'),
+(19, 'ENR-202606-019', 4, 'UI 设计与 Figma 原型实训', '冯嘉禾', '19900001019', 'jiahe.feng@example.com', '已通过审核，等待缴费', 480, 0, 'UNPAID', 'ENROLLED', '2026-06-10 11:20:00', '2026-06-10 11:20:00'),
+(20, 'ENR-202606-020', 5, 'Office 办公自动化提升班', '魏景行', '19900001020', 'jingxing.wei@example.com', '学员改报其他时间段，当前报名取消', 180, 0, 'UNPAID', 'CANCELLED', '2026-06-10 16:45:00', '2026-06-10 16:45:00')
+ON DUPLICATE KEY UPDATE
+  `course_id` = VALUES(`course_id`),
+  `course_title` = VALUES(`course_title`),
+  `student_name` = VALUES(`student_name`),
+  `student_phone` = VALUES(`student_phone`),
+  `student_email` = VALUES(`student_email`),
+  `remark` = VALUES(`remark`),
+  `registration_fee` = VALUES(`registration_fee`),
+  `paid_amount` = VALUES(`paid_amount`),
+  `payment_status` = VALUES(`payment_status`),
+  `enrollment_status` = VALUES(`enrollment_status`),
+  `update_time` = VALUES(`update_time`);
+
+-- ============================================================
+-- 缴费记录
+-- ============================================================
+INSERT INTO `payment_record` (`id`, `order_id`, `amount`, `payment_method`, `payment_time`, `operator_name`, `remark`, `create_time`) VALUES
+(1, 1, 680, 'WECHAT', '2026-06-02 14:20:00', '周明', 'PAY-202606-001；REGISTRATION_FEE；PAID', '2026-06-02 14:20:00'),
+(2, 2, 760, 'ALIPAY', '2026-06-02 15:05:00', '周明', 'PAY-202606-002；REGISTRATION_FEE；PAID', '2026-06-02 15:05:00'),
+(3, 2, 6840, 'BANK', '2026-06-03 09:30:00', '顾然', 'PAY-202606-003；COURSE_FEE；PAID', '2026-06-03 09:30:00'),
+(4, 3, 520, 'WECHAT', '2026-06-03 10:15:00', '周明', 'PAY-202606-004；REGISTRATION_FEE；PAID', '2026-06-03 10:15:00'),
+(5, 3, 4680, 'BANK', '2026-06-03 16:40:00', '顾然', 'PAY-202606-005；COURSE_FEE；PAID', '2026-06-03 16:40:00'),
+(6, 5, 480, 'ALIPAY', '2026-06-04 11:25:00', '周明', 'PAY-202606-006；REGISTRATION_FEE；PAID', '2026-06-04 11:25:00'),
+(7, 6, 180, 'CASH', '2026-06-04 14:10:00', '顾然', 'PAY-202606-007；REGISTRATION_FEE；PAID', '2026-06-04 14:10:00'),
+(8, 6, 1620, 'WECHAT', '2026-06-04 14:18:00', '顾然', 'PAY-202606-008；COURSE_FEE；PAID', '2026-06-04 14:18:00'),
+(9, 7, 360, 'BANK', '2026-06-05 10:45:00', '周明', 'PAY-202606-009；REGISTRATION_FEE；PAID', '2026-06-05 10:45:00'),
+(10, 8, 300, 'WECHAT', '2026-06-05 13:50:00', '顾然', 'PAY-202606-010；REGISTRATION_FEE；PAID', '2026-06-05 13:50:00'),
+(11, 8, 2680, 'ALIPAY', '2026-06-06 09:20:00', '顾然', 'PAY-202606-011；COURSE_FEE；PAID', '2026-06-06 09:20:00'),
+(12, 10, 620, 'WECHAT', '2026-06-06 11:35:00', '周明', 'PAY-202606-012；REGISTRATION_FEE；PAID', '2026-06-06 11:35:00'),
+(13, 10, 5580, 'BANK', '2026-06-07 15:25:00', '顾然', 'PAY-202606-013；COURSE_FEE；PAID', '2026-06-07 15:25:00'),
+(14, 11, 680, 'CASH', '2026-06-07 16:10:00', '周明', 'PAY-202606-014；REGISTRATION_FEE；PAID', '2026-06-07 16:10:00'),
+(15, 13, 760, 'ALIPAY', '2026-06-08 10:30:00', '顾然', 'PAY-202606-015；REGISTRATION_FEE；PAID', '2026-06-08 10:30:00')
+ON DUPLICATE KEY UPDATE
+  `order_id` = VALUES(`order_id`),
+  `amount` = VALUES(`amount`),
+  `payment_method` = VALUES(`payment_method`),
+  `payment_time` = VALUES(`payment_time`),
+  `operator_name` = VALUES(`operator_name`),
+  `remark` = VALUES(`remark`),
+  `create_time` = VALUES(`create_time`);
+
+-- dashboard 数据由后端 DashboardService / FinanceService 基于以上表聚合生成，不单独入库。

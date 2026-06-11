@@ -49,6 +49,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0
 ### Fixed
 
 - 报名状态转换校验：增加 ENROLLED 终态检查，防止跳级变更和状态回退
+- 修复不支持的请求 `Content-Type` 被统一异常处理误报为 200/500 的问题，现在返回 HTTP 415。
+- 修复财务汇总聚合结果在不同数据库别名大小写下读取为零的问题。
 
 ### Planned
 

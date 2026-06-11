@@ -24,18 +24,26 @@ public class FinanceServiceImpl extends ServiceImpl<EnrollmentOrderMapper, Enrol
         Map<String, Object> summary = enrollmentOrderMapper.selectFinanceSummary();
         FinanceSummaryVO vo = new FinanceSummaryVO();
 
-        vo.setOrderCount(toLong(summary.get("order_count")));
-        vo.setTotalRegistrationFee(toBigDecimal(summary.get("total_registration_fee")));
-        vo.setTotalPaidAmount(toBigDecimal(summary.get("total_paid_amount")));
-        vo.setPaidCount(toLong(summary.get("paid_count")));
-        vo.setUnpaidCount(toLong(summary.get("unpaid_count")));
-        vo.setPartialCount(toLong(summary.get("partial_count")));
-        vo.setRefundedCount(toLong(summary.get("refunded_count")));
-        vo.setTotalUnpaidAmount(toBigDecimal(summary.get("total_unpaid_amount")));
-        vo.setTotalPartialAmount(toBigDecimal(summary.get("total_partial_amount")));
-        vo.setTotalRefundedAmount(toBigDecimal(summary.get("total_refunded_amount")));
+        vo.setOrderCount(toLong(getSummaryValue(summary, "order_count")));
+        vo.setTotalRegistrationFee(toBigDecimal(getSummaryValue(summary, "total_registration_fee")));
+        vo.setTotalPaidAmount(toBigDecimal(getSummaryValue(summary, "total_paid_amount")));
+        vo.setPaidCount(toLong(getSummaryValue(summary, "paid_count")));
+        vo.setUnpaidCount(toLong(getSummaryValue(summary, "unpaid_count")));
+        vo.setPartialCount(toLong(getSummaryValue(summary, "partial_count")));
+        vo.setRefundedCount(toLong(getSummaryValue(summary, "refunded_count")));
+        vo.setTotalUnpaidAmount(toBigDecimal(getSummaryValue(summary, "total_unpaid_amount")));
+        vo.setTotalPartialAmount(toBigDecimal(getSummaryValue(summary, "total_partial_amount")));
+        vo.setTotalRefundedAmount(toBigDecimal(getSummaryValue(summary, "total_refunded_amount")));
 
         return vo;
+    }
+
+    private Object getSummaryValue(Map<String, Object> summary, String key) {
+        Object value = summary.get(key);
+        if (value != null) {
+            return value;
+        }
+        return summary.get(key.toUpperCase());
     }
 
     private BigDecimal toBigDecimal(Object value) {
