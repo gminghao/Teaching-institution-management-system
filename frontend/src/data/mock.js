@@ -108,19 +108,23 @@ export const mockCourses = [
   }
 ]
 
+// 注意：以下 mock 数据仅用于 UI 展示，实际数据应从后端 API 获取
+// 报名费不变量：paidAmount <= registrationFee
+// 缴费状态：UNPAID (累计=0), PARTIAL (0<累计<应缴), PAID (累计>=应缴), REFUNDED (手动)
+
 export const mockTransactions = [
-  { id: 'ORD-2412-001', date: '2024-12-01 10:23', name: '张伟', amount: '¥15,000.00', method: '银行转账', status: 'completed', operator: '系统自动' },
-  { id: 'ORD-2412-002', date: '2024-12-01 09:45', name: '李娜', amount: '¥22,500.00', method: '微信支付', status: 'completed', operator: '系统自动' },
-  { id: 'ORD-2411-089', date: '2024-11-30 16:20', name: '王强', amount: '¥8,000.00', method: '支付宝', status: 'pending', operator: '陈管理员' },
-  { id: 'ORD-2411-088', date: '2024-11-30 14:15', name: '赵雪', amount: '¥12,000.00', method: '信用卡', status: 'failed', operator: '系统自动' }
+  { id: 'PAY-20260601-001', date: '2026-06-01 10:23', name: '张伟', orderId: 'EN20260601001', amount: 500.00, method: '银行转账', status: 'PAID', operator: '陈管理员' },
+  { id: 'PAY-20260601-002', date: '2026-06-01 09:45', name: '李娜', orderId: 'EN20260601002', amount: 300.00, method: '微信支付', status: 'PARTIAL', operator: '陈管理员' },
+  { id: 'PAY-20260531-003', date: '2026-05-31 16:20', name: '王强', orderId: 'EN20260531001', amount: 680.00, method: '支付宝', status: 'PAID', operator: '陈管理员' },
+  { id: 'PAY-20260531-004', date: '2026-05-31 14:15', name: '赵雪', orderId: 'EN20260531002', amount: 0.00, method: '-', status: 'UNPAID', operator: '-' }
 ]
 
 export const mockEnrollments = [
-  { orderNo: '#ENR-4920', studentName: 'Eleanor Vance', courseTitle: 'Advanced Data Structures', date: 'Oct 24, 2024', enrollmentStatus: 'Enrolled', paymentStatus: '已结清', amount: '$1,200.00', paid: '$1,200.00' },
-  { orderNo: '#ENR-4919', studentName: 'Theodora Crain', courseTitle: 'Introduction to Psychology', date: 'Oct 24, 2024', enrollmentStatus: 'Pending', paymentStatus: '部分', amount: '$850.00', paid: '$400.00' },
-  { orderNo: '#ENR-4918', studentName: 'Luke Sanderson', courseTitle: 'Macroeconomics 101', date: 'Oct 23, 2024', enrollmentStatus: 'Enrolled', paymentStatus: '未交', amount: '$1,500.00', paid: '$0.00' },
-  { orderNo: '#ENR-4917', studentName: 'Steven Dudley', courseTitle: 'Creative Writing Workshop', date: 'Oct 23, 2024', enrollmentStatus: 'Enrolled', paymentStatus: '已结清', amount: '$920.00', paid: '$920.00' },
-  { orderNo: '#ENR-4916', studentName: 'Shirley Jackson', courseTitle: 'Modern American Literature', date: 'Oct 22, 2024', enrollmentStatus: 'Failed', paymentStatus: '未交', amount: '$760.00', paid: '$0.00' }
+  { orderNo: 'EN20260601001', studentName: '张伟', courseTitle: '高级算法与数据结构', date: '2026-06-01', enrollmentStatus: 'ENROLLED', paymentStatus: 'PAID', registrationFee: 800.00, paidAmount: 800.00 },
+  { orderNo: 'EN20260601002', studentName: '李娜', courseTitle: '战略公司财务', date: '2026-06-01', enrollmentStatus: 'CONTACTED', paymentStatus: 'PARTIAL', registrationFee: 680.00, paidAmount: 300.00 },
+  { orderNo: 'EN20260531001', studentName: '王强', courseTitle: '预测建模与机器学习', date: '2026-05-31', enrollmentStatus: 'ENROLLED', paymentStatus: 'PAID', registrationFee: 1000.00, paidAmount: 1000.00 },
+  { orderNo: 'EN20260531002', studentName: '赵雪', courseTitle: '现代哲学论述', date: '2026-05-31', enrollmentStatus: 'PENDING', paymentStatus: 'UNPAID', registrationFee: 560.00, paidAmount: 0.00 },
+  { orderNo: 'EN20260530001', studentName: '陈明', courseTitle: '医疗系统管理', date: '2026-05-30', enrollmentStatus: 'CANCELLED', paymentStatus: 'UNPAID', registrationFee: 780.00, paidAmount: 0.00 }
 ]
 
 export const courseCategories = ['全部课程', '计算机科学', '工商管理', '人文艺术', '数据分析', '医疗管理', '设计']
