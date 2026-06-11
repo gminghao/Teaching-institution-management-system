@@ -2,7 +2,7 @@
 
 > Project handoff report — generated 2026-06-11
 > Current branch: `dev` | Base branch: `main`
-> Progress: 50/68 tasks (73.5%)
+> Progress: 58/78 tasks (74.4%)
 
 ---
 
@@ -364,6 +364,24 @@
 
 ## 4. Open TODOs and rollback notes
 
+* DONE: JWT secret via environment variable
+* Status: COMPLETED
+* Target files: `backend/src/main/resources/application.yml`
+* Verification: `secret: ${JWT_SECRET:course-manager-jwt-secret-key-2026-must-be-at-least-256-bits}`
+
+* DONE: Database credentials via environment variable
+* Status: COMPLETED
+* Target files: `backend/src/main/resources/application.yml`
+* Verification: `username: ${DB_USERNAME:root}`, `password: ${DB_PASSWORD:root}`
+
+* DONE: Course creation validates categoryId
+* Status: COMPLETED
+* Target files: `backend/src/main/java/com/institution/coursemanager/service/impl/CourseServiceImpl.java`
+
+* DONE: Course deletion checks associated orders
+* Status: COMPLETED
+* Target files: `backend/src/main/java/com/institution/coursemanager/service/impl/CourseServiceImpl.java`
+
 * TODO: Connect frontend login to real backend API
 * Priority: HIGH
 * Required prerequisite: Backend login API working
@@ -383,26 +401,6 @@
 * Rollback files: All frontend view files
 * Rollback command: `git restore frontend/src/views/`
 * Post-rollback verification: Manual UI test
-
-* TODO: JWT secret via environment variable
-* Priority: MEDIUM
-* Required prerequisite: None
-* Target files: `backend/src/main/resources/application.yml`
-* Risk: Security vulnerability in production
-* Suggested action: Change to `${JWT_SECRET:default-dev-only-key}`
-* Rollback files: `backend/src/main/resources/application.yml`
-* Rollback command: `git restore backend/src/main/resources/application.yml`
-* Post-rollback verification: `mvn compile`
-
-* TODO: Database credentials via environment variable
-* Priority: MEDIUM
-* Required prerequisite: None
-* Target files: `backend/src/main/resources/application.yml`
-* Risk: Security vulnerability in production
-* Suggested action: Change to `${DB_PASSWORD:root}`
-* Rollback files: `backend/src/main/resources/application.yml`
-* Rollback command: `git restore backend/src/main/resources/application.yml`
-* Post-rollback verification: `mvn compile`
 
 * TODO: Add logging to AdminAuthInterceptor catch block
 * Priority: LOW
