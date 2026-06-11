@@ -26,13 +26,26 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0
 - 定义管理员报名 DTO/VO（`EnrollmentStatusDTO`, `AdminEnrollmentVO`）
 - 定义管理员缴费 DTO/VO（`PaymentCreateDTO`, `PaymentRecordVO`）
 - 定义仪表盘和财务 VO（`DashboardOverviewVO`, `RecentEnrollmentVO`, `FinanceSummaryVO`）
+- 实现 Entity 模型类（`AdminUser`, `CourseCategory`, `Course`, `EnrollmentOrder`, `PaymentRecord`）
+- 实现 Service 接口和实现类（`AuthService`, `CourseService`, `EnrollmentService`, `PaymentService`, `DashboardService`, `FinanceService`, `CourseCategoryService`）
+- 创建异常处理体系（`BusinessException`, `ValidationException`, `NotFoundException`, `UnauthorizedException`, `ConflictException`）
+- 创建 JWT 工具类（`JwtUtil`）
+- 创建 Mapper 接口（`AdminUserMapper`, `CourseCategoryMapper`, `CourseMapper`, `EnrollmentOrderMapper`, `PaymentRecordMapper`）
+- 修复前端 404 路由（`/:pathMatch(.*)*`）
+- 修复 Axios blob 响应豁免
+- 修复 `getUser()` JSON 解析异常处理
+- 新增 404 页面（`NotFoundPage.vue`）
+- 新增全局样式文件（`assets/styles/main.css`）
+
+### Fixed
+
+- 报名状态转换校验：增加 ENROLLED 终态检查，防止跳级变更和状态回退
 
 ### Planned
 
 - 数据库建表脚本（admin_user、course_category、course、enrollment_order、payment_record）
-- 管理员登录功能（JWT 鉴权）
-- 课程管理功能（CRUD + 上下架）
-- 访客课程展示（列表 + 详情）
-- 报名订单功能（提交报名 + 状态管理）
-- 财务登记功能（缴费登记 + 状态自动计算）
-- 仪表盘统计功能
+- Mapper 持久层完善（XML 映射）
+- Controller 层实现
+- 访客页面实现（HomePage, CourseListPage, CourseDetailPage, EnrollmentPage）
+- 管理员页面实现（LoginPage, DashboardPage, CourseManagePage, EnrollmentManagePage, FinancePage）
+- 后端测试完善
