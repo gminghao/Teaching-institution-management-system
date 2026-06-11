@@ -8,10 +8,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * 管理员端 JWT 认证拦截器
  */
+@Slf4j
 @Component
 public class AdminAuthInterceptor implements HandlerInterceptor {
 
@@ -37,6 +39,7 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
                 request.setAttribute("currentUsername", username);
                 return true;
             } catch (Exception e) {
+                log.warn("Token validation failed: {}", e.getMessage());
                 // Token 无效，继续返回 401
             }
         }

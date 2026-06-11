@@ -336,16 +336,16 @@ Phase 1 (初始化)
 - [x] **P0** 分页大小添加上限约束
   - 依赖：无
   - 产出：`CourseServiceImpl.java`, `EnrollmentServiceImpl.java`
-- [ ] **P1** JWT Secret 环境变量化
-  - 依赖：无
-  - 产出：`application.yml`, `JwtUtil.java`
-- [ ] **P1** 数据库密码环境变量化
+- [x] **P1** JWT Secret 环境变量化
   - 依赖：无
   - 产出：`application.yml`
-- [ ] **P1** 课程创建校验 categoryId
+- [x] **P1** 数据库密码环境变量化
+  - 依赖：无
+  - 产出：`application.yml`
+- [x] **P1** 课程创建校验 categoryId
   - 依赖：无
   - 产出：`CourseServiceImpl.java`
-- [ ] **P1** 课程删除检查关联订单
+- [x] **P1** 课程删除检查关联订单
   - 依赖：无
   - 产出：`CourseServiceImpl.java`
 
@@ -375,5 +375,5 @@ Phase 1 (初始化)
 | Phase 9: 后端测试 | 10 | 0 | 0% |
 | Phase 10: 集成测试 | 3 | 0 | 0% |
 | Phase 11: 收尾 | 5 | 0 | 0% |
-| Phase 12: 代码审查修复 | 10 | 3 | 30% |
-| **合计** | **78** | **53** | **67.9%** |
+| Phase 12: 代码审查修复 | 10 | 8 | 80% |
+| **合计** | **78** | **58** | **74.4%** |

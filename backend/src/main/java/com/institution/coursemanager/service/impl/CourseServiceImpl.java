@@ -7,11 +7,15 @@ import com.institution.coursemanager.dto.CourseCreateDTO;
 import com.institution.coursemanager.dto.CourseUpdateDTO;
 import com.institution.coursemanager.entity.Course;
 import com.institution.coursemanager.entity.CourseCategory;
+import com.institution.coursemanager.entity.EnrollmentOrder;
 import com.institution.coursemanager.enums.CourseStatus;
+import com.institution.coursemanager.enums.EnrollmentStatus;
 import com.institution.coursemanager.exception.NotFoundException;
+import com.institution.coursemanager.exception.ConflictException;
 import com.institution.coursemanager.exception.ValidationException;
 import com.institution.coursemanager.mapper.CourseCategoryMapper;
 import com.institution.coursemanager.mapper.CourseMapper;
+import com.institution.coursemanager.mapper.EnrollmentOrderMapper;
 import com.institution.coursemanager.service.CourseService;
 import com.institution.coursemanager.vo.AdminCourseVO;
 import com.institution.coursemanager.vo.PageResult;
@@ -33,14 +37,22 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     private static final int NOT_DELETED = 0;
 
     private final CourseCategoryMapper courseCategoryMapper;
+    private final EnrollmentOrderMapper enrollmentOrderMapper;
 
-    public CourseServiceImpl(CourseCategoryMapper courseCategoryMapper) {
+    public CourseServiceImpl(CourseCategoryMapper courseCategoryMapper, EnrollmentOrderMapper enrollmentOrderMapper) {
         this.courseCategoryMapper = courseCategoryMapper;
+        this.enrollmentOrderMapper = enrollmentOrderMapper;
     }
 
     @Override
     public AdminCourseVO createCourse(CourseCreateDTO dto) {
         validateCreateDTO(dto);
+
+        // 校验分类是否存在
+        CourseCategory category = courseCategoryMapper.selectById(dto.getCategoryId());
+        if (category == null) {
+            throw new NotFoundException("课程分类不存在");
+        }
         LocalDateTime now = LocalDateTime.now();
 
         Course course = new Course();
@@ -103,6 +115,18 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     @Override
     public void deleteCourse(Long id) {
         requireCourse(id);
+
+        // 检查是否存在未完结的报名订单
+        Long orderCount = enrollmentOrderMapper.selectCount(
+                new LambdaQueryWrapper<EnrollmentOrder>()
+                        .eq(EnrollmentOrder::getCourseId, id)
+                        .in(EnrollmentOrder::getEnrollmentStatus,
+                                EnrollmentStatus.PENDING.getCode(),
+                                EnrollmentStatus.CONTACTED.getCode())
+        );
+        if (orderCount > 0) {
+            throw new ConflictException("该课程存在未完结的报名订单，无法删除");
+        }
         removeById(id);
     }
 
