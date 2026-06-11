@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.institution.coursemanager.mapper.CourseMapper">
+
+    <!-- 访客课程分页查询 -->
+    <select id="selectPublicPage" resultType="com.institution.coursemanager.vo.PublicCourseVO">
+        SELECT
+            c.id, c.category_id, cc.name AS category_name, c.title, c.subtitle,
+            c.cover_image, c.teacher_name, c.price, c.registration_fee
+        FROM course c
+        LEFT JOIN course_category cc ON c.category_id = cc.id
+        WHERE c.deleted = 0 AND c.status = 'ONLINE'
+        <if test="categoryId != null">
+            AND c.category_id = #{categoryId}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND c.title LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        ORDER BY c.create_time DESC
+    </select>
+
+    <!-- 管理员课程分页查询 -->
+    <select id="selectAdminPage" resultType="com.institution.coursemanager.vo.AdminCourseVO">
+        SELECT
+            c.id, c.category_id, cc.name AS category_name, c.title, c.subtitle,
+            c.cover_image, c.description, c.teacher_name, c.price,
+            c.registration_fee, c.status, c.create_time, c.update_time
+        FROM course c
+        LEFT JOIN course_category cc ON c.category_id = cc.id
+        WHERE c.deleted = 0
+        <if test="categoryId != null">
+            AND c.category_id = #{categoryId}
+        </if>
+        <if test="keyword != null and keyword != ''">
+            AND c.title LIKE CONCAT('%', #{keyword}, '%')
+        </if>
+        <if test="status != null and status != ''">
+            AND c.status = #{status}
+        </if>
+        ORDER BY c.create_time DESC
+    </select>
+
+</mapper>

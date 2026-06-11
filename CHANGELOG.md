@@ -30,7 +30,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0
 - 实现 Service 接口和实现类（`AuthService`, `CourseService`, `EnrollmentService`, `PaymentService`, `DashboardService`, `FinanceService`, `CourseCategoryService`）
 - 创建异常处理体系（`BusinessException`, `ValidationException`, `NotFoundException`, `UnauthorizedException`, `ConflictException`）
 - 创建 JWT 工具类（`JwtUtil`）
-- 创建 Mapper 接口（`AdminUserMapper`, `CourseCategoryMapper`, `CourseMapper`, `EnrollmentOrderMapper`, `PaymentRecordMapper`）
+- 完善 Mapper 接口（`AdminUserMapper`, `CourseCategoryMapper`, `CourseMapper`, `EnrollmentOrderMapper`, `PaymentRecordMapper`）
+- 新增 CourseMapper.xml 联表查询映射
 - 修复前端 404 路由（`/:pathMatch(.*)*`）
 - 修复 Axios blob 响应豁免
 - 修复 `getUser()` JSON 解析异常处理

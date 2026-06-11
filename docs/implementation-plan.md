@@ -81,19 +81,19 @@
 
 ## Phase 4: Mapper 持久层
 
-- [ ] **P0** 实现 AdminUserMapper
+- [x] **P0** 实现 AdminUserMapper
   - 依赖：Entity 完成
   - 产出：`AdminUserMapper.java`
-- [ ] **P0** 实现 CourseCategoryMapper
+- [x] **P0** 实现 CourseCategoryMapper
   - 依赖：Entity 完成
   - 产出：`CourseCategoryMapper.java`
-- [ ] **P0** 实现 CourseMapper
+- [x] **P0** 实现 CourseMapper
   - 依赖：Entity 完成
-  - 产出：`CourseMapper.java`, 可能需要 XML 映射（复杂查询）
-- [ ] **P0** 实现 EnrollmentOrderMapper
+  - 产出：`CourseMapper.java`, `CourseMapper.xml`（联表查询）
+- [x] **P0** 实现 EnrollmentOrderMapper
   - 依赖：Entity 完成
   - 产出：`EnrollmentOrderMapper.java`
-- [ ] **P0** 实现 PaymentRecordMapper
+- [x] **P0** 实现 PaymentRecordMapper
   - 依赖：Entity 完成
   - 产出：`PaymentRecordMapper.java`
 
@@ -321,7 +321,7 @@ Phase 1 (初始化)
 | Phase 1: 项目初始化 | 5 | 5 | 100% |
 | Phase 2: DTO/VO 契约 | 7 | 7 | 100% |
 | Phase 3: Entity + Service | 7 | 7 | 100% |
-| Phase 4: Mapper | 5 | 0 | 0% |
+| Phase 4: Mapper | 5 | 5 | 100% |
 | Phase 5: Controller | 10 | 0 | 0% |
 | Phase 6: 前端基础 | 7 | 7 | 100% |
 | Phase 7: 访客页面 | 4 | 0 | 0% |
@@ -329,4 +329,4 @@ Phase 1 (初始化)
 | Phase 9: 后端测试 | 10 | 0 | 0% |
 | Phase 10: 集成测试 | 3 | 0 | 0% |
 | Phase 11: 收尾 | 5 | 0 | 0% |
-| **合计** | **68** | **26** | **38.2%** |
+| **合计** | **68** | **31** | **45.6%** |

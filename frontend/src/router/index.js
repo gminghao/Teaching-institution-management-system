@@ -33,7 +33,8 @@ const routes = [
   {
     path: '/admin/login',
     name: 'AdminLogin',
-    component: () => import('@/views/admin/LoginPage.vue')
+    component: () => import('@/views/admin/LoginPage.vue'),
+    meta: { guestOnly: true }
   },
   // 管理员端路由（需要鉴权）
   {
@@ -81,17 +82,21 @@ const router = createRouter({
 })
 
 // 导航守卫：管理员端需要鉴权
-router.beforeEach((to, from, next) => {
-  if (to.matched.some(record => record.meta.requiresAuth)) {
-    const token = getToken()
-    if (!token) {
-      next({ name: 'AdminLogin', query: { redirect: to.fullPath } })
-    } else {
-      next()
-    }
-  } else {
-    next()
+router.beforeEach(to => {
+  const token = getToken()
+  const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
+  const guestOnly = to.matched.some(record => record.meta.guestOnly)
+
+  if (requiresAuth && !token) {
+    return { name: 'AdminLogin', query: { redirect: to.fullPath } }
   }
+
+  if (guestOnly && token) {
+    const redirect = typeof to.query.redirect === 'string' ? to.query.redirect : ''
+    return redirect && redirect.startsWith('/admin') ? redirect : '/admin/dashboard'
+  }
+
+  return true
 })
 
 export default router
