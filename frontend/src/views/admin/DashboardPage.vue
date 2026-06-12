@@ -67,9 +67,10 @@ const metrics = [
 ]
 
 const statusTone = status => {
-  if (status === 'Enrolled') return 'success'
-  if (status === 'Pending') return 'warning'
-  return 'danger'
+  if (status === 'ENROLLED') return 'success'
+  if (status === 'PENDING' || status === 'CONTACTED') return 'warning'
+  if (status === 'CANCELLED') return 'danger'
+  return 'info'
 }
 </script>
 

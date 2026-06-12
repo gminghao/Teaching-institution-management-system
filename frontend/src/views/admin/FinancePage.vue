@@ -139,9 +139,11 @@ const bars = [
 ]
 
 const statusText = (status, formal = false) => {
-  if (status === 'completed') return formal ? '已完成' : '成功'
-  if (status === 'pending') return '处理中'
-  return formal ? '失败' : '失败'
+  if (status === 'PAID') return formal ? '已缴费' : '已缴费'
+  if (status === 'PARTIAL') return '部分缴费'
+  if (status === 'UNPAID') return '未缴费'
+  if (status === 'REFUNDED') return '已退款'
+  return status || '未知'
 }
 </script>
 
@@ -414,6 +416,23 @@ const statusText = (status, formal = false) => {
   font-weight: 800;
 }
 
+.PAID {
+  color: var(--color-success);
+}
+
+.PARTIAL {
+  color: var(--color-warning);
+}
+
+.UNPAID {
+  color: var(--color-danger);
+}
+
+.REFUNDED {
+  color: var(--color-info);
+}
+
+/* 保留旧类名兼容 */
 .completed {
   color: var(--color-success);
 }
@@ -509,16 +528,23 @@ td {
   border: 1px solid currentColor;
 }
 
-.tx-status.completed {
+.tx-status.completed,
+.tx-status.PAID {
   background: rgba(16, 185, 129, 0.1);
 }
 
-.tx-status.pending {
+.tx-status.pending,
+.tx-status.PARTIAL {
   background: rgba(245, 158, 11, 0.12);
 }
 
-.tx-status.failed {
+.tx-status.failed,
+.tx-status.UNPAID {
   background: rgba(239, 68, 68, 0.12);
+}
+
+.tx-status.REFUNDED {
+  background: rgba(107, 114, 128, 0.12);
 }
 
 .transaction-card footer {

@@ -62,14 +62,14 @@
               <small class="course-code">{{ item.code }}</small>
             </td>
             <td>
-              <strong>{{ item.amount }}</strong>
-              <small class="paid">Paid: {{ item.paid }}</small>
+              <strong>{{ item.amountText }}</strong>
+              <small class="paid">已缴: {{ item.paidText }}</small>
             </td>
             <td>
-              <span :class="['status-pill', item.paymentTone]">{{ item.paymentStatus }}</span>
+              <span :class="['status-pill', item.paymentTone]">{{ item.paymentStatusText }}</span>
             </td>
             <td>
-              <span :class="['status-pill', item.enrollmentTone]">{{ item.enrollmentStatus }}</span>
+              <span :class="['status-pill', item.enrollmentTone]">{{ item.enrollmentStatusText }}</span>
             </td>
             <td class="right action-cell">{{ index === 0 ? '查看' : '修改状态' }}</td>
           </tr>
@@ -92,12 +92,26 @@
 
 <script setup>
 import { Document, Filter, Plus, User } from '@element-plus/icons-vue'
+import { mockEnrollments } from '@/data/mock'
+import { enrollmentStatusMap, paymentStatusMap, formatMoney } from '@/utils/format'
 
-const rows = [
-  { orderNo: '#ORD-9821', studentName: 'Eleanor Vance', email: 'e.vance@example.com', courseTitle: 'Advanced Data Structures', code: 'CS-401 · Fall 2024', amount: '$1,200.00', paid: '$1,200.00', paymentStatus: '已结清', paymentTone: 'success', enrollmentStatus: '已批准', enrollmentTone: 'success' },
-  { orderNo: '#ORD-9822', studentName: 'Theodore Hayes', email: 't.hayes@example.com', courseTitle: 'Modern European History', code: 'HIS-205 · Fall 2024', amount: '$850.00', paid: '$400.00', paymentStatus: '部分', paymentTone: 'warning', enrollmentStatus: '待处理', enrollmentTone: 'warning' },
-  { orderNo: '#ORD-9823', studentName: 'Maya Lin', email: 'm.lin@example.com', courseTitle: 'Intro to Machine Learning', code: 'CS-505 · Fall 2024', amount: '$1,500.00', paid: '$0.00', paymentStatus: '未交', paymentTone: 'danger', enrollmentStatus: '候补', enrollmentTone: 'info' }
-]
+const statusTone = (status) => {
+  if (status === 'ENROLLED' || status === 'PAID') return 'success'
+  if (status === 'CONTACTED' || status === 'PARTIAL') return 'warning'
+  if (status === 'PENDING' || status === 'UNPAID') return 'info'
+  if (status === 'CANCELLED' || status === 'REFUNDED') return 'danger'
+  return 'info'
+}
+
+const rows = mockEnrollments.map(e => ({
+  ...e,
+  amountText: `¥${formatMoney(e.registrationFee)}`,
+  paidText: `¥${formatMoney(e.paidAmount)}`,
+  paymentStatusText: paymentStatusMap[e.paymentStatus] || e.paymentStatus,
+  paymentTone: statusTone(e.paymentStatus),
+  enrollmentStatusText: enrollmentStatusMap[e.enrollmentStatus] || e.enrollmentStatus,
+  enrollmentTone: statusTone(e.enrollmentStatus)
+}))
 </script>
 
 <style scoped>
