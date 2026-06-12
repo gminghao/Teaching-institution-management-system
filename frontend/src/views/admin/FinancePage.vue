@@ -132,7 +132,7 @@
         <el-form-item label="支付方式" prop="paymentMethod">
           <el-select v-model="paymentForm.paymentMethod" placeholder="请选择支付方式" style="width: 100%">
             <el-option label="现金" value="CASH" />
-            <el-option label="银行转账" value="BANK_TRANSFER" />
+            <el-option label="银行转账" value="BANK" />
             <el-option label="微信支付" value="WECHAT" />
             <el-option label="支付宝" value="ALIPAY" />
           </el-select>
@@ -313,7 +313,7 @@ const submitPayment = async () => {
     if (!valid) return
     try {
       const res = await createPayment({
-        enrollmentId: paymentForm.value.orderId,
+        orderId: paymentForm.value.orderId,
         amount: paymentForm.value.amount,
         paymentMethod: paymentForm.value.paymentMethod,
         operatorName: paymentForm.value.operatorName
