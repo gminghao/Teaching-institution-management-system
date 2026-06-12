@@ -15,6 +15,10 @@ export function getAdminCourses(params) {
   return request.get('/admin/courses', { params })
 }
 
+export function getCourseDetail(id) {
+  return request.get(`/admin/courses/${id}`)
+}
+
 export function createCourse(data) {
   return request.post('/admin/courses', data)
 }
@@ -23,12 +27,20 @@ export function updateCourse(id, data) {
   return request.put(`/admin/courses/${id}`, data)
 }
 
+export function deleteCourse(id) {
+  return request.delete(`/admin/courses/${id}`)
+}
+
 export function onlineCourse(id) {
   return request.put(`/admin/courses/${id}/online`)
 }
 
 export function offlineCourse(id) {
   return request.put(`/admin/courses/${id}/offline`)
+}
+
+export function getCategories() {
+  return request.get('/admin/courses/categories')
 }
 
 // ========== 报名管理 ==========
@@ -43,6 +55,10 @@ export function updateEnrollmentStatus(id, data) {
 // ========== 缴费管理 ==========
 export function createPayment(data) {
   return request.post('/admin/payments', data)
+}
+
+export function getPaymentRecords(orderId) {
+  return request.get('/admin/payments', { params: { orderId } })
 }
 
 // ========== 财务管理 ==========

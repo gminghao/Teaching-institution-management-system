@@ -1,7 +1,6 @@
 package com.institution.coursemanager.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.institution.coursemanager.entity.Course;
 import com.institution.coursemanager.entity.EnrollmentOrder;
 import com.institution.coursemanager.enums.CourseStatus;
@@ -18,15 +17,16 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
-public class DashboardServiceImpl extends ServiceImpl<EnrollmentOrderMapper, EnrollmentOrder>
-        implements DashboardService {
+public class DashboardServiceImpl implements DashboardService {
 
     private static final DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     private final CourseMapper courseMapper;
+    private final EnrollmentOrderMapper enrollmentOrderMapper;
 
-    public DashboardServiceImpl(CourseMapper courseMapper) {
+    public DashboardServiceImpl(CourseMapper courseMapper, EnrollmentOrderMapper enrollmentOrderMapper) {
         this.courseMapper = courseMapper;
+        this.enrollmentOrderMapper = enrollmentOrderMapper;
     }
 
     @Override
@@ -35,8 +35,8 @@ public class DashboardServiceImpl extends ServiceImpl<EnrollmentOrderMapper, Enr
         vo.setTotalCourses(courseMapper.selectCount(new LambdaQueryWrapper<Course>()));
         vo.setOnlineCourses(courseMapper.selectCount(new LambdaQueryWrapper<Course>()
                 .eq(Course::getStatus, CourseStatus.ONLINE.getCode())));
-        vo.setTotalEnrollments(count());
-        vo.setPendingEnrollments(count(new LambdaQueryWrapper<EnrollmentOrder>()
+        vo.setTotalEnrollments(enrollmentOrderMapper.selectCount(new LambdaQueryWrapper<EnrollmentOrder>()));
+        vo.setPendingEnrollments(enrollmentOrderMapper.selectCount(new LambdaQueryWrapper<EnrollmentOrder>()
                 .eq(EnrollmentOrder::getEnrollmentStatus, EnrollmentStatus.PENDING.getCode())));
         vo.setPaidCount(countByPaymentStatus(PaymentStatus.PAID));
         vo.setUnpaidCount(countByPaymentStatus(PaymentStatus.UNPAID));
@@ -47,12 +47,12 @@ public class DashboardServiceImpl extends ServiceImpl<EnrollmentOrderMapper, Enr
     }
 
     private Long countByPaymentStatus(PaymentStatus status) {
-        return count(new LambdaQueryWrapper<EnrollmentOrder>()
+        return enrollmentOrderMapper.selectCount(new LambdaQueryWrapper<EnrollmentOrder>()
                 .eq(EnrollmentOrder::getPaymentStatus, status.getCode()));
     }
 
     private List<RecentEnrollmentVO> getRecentEnrollments() {
-        return list(new LambdaQueryWrapper<EnrollmentOrder>()
+        return enrollmentOrderMapper.selectList(new LambdaQueryWrapper<EnrollmentOrder>()
                         .orderByDesc(EnrollmentOrder::getCreateTime)
                         .last("LIMIT 5"))
                 .stream()

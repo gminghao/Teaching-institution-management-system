@@ -47,12 +47,18 @@
         </div>
 
         <div class="header-actions">
-          <div class="header-search" aria-label="搜索占位">
+          <div class="header-search">
             <el-icon><Search /></el-icon>
-            <span>搜索课程、订单或学员...</span>
+            <input
+              v-model="searchKeyword"
+              class="header-search__input"
+              type="text"
+              placeholder="搜索课程、订单或学员..."
+              @keyup.enter="handleSearch"
+            >
           </div>
           <div class="admin-user">
-            <img class="admin-user__avatar" :src="referenceImages.adminProfile" alt="管理员头像">
+            <span class="admin-user__avatar">{{ username[0] }}</span>
             <span class="admin-user__name">{{ username }}</span>
           </div>
         </div>
@@ -66,9 +72,9 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { getUser, logout, getToken } from '@/utils/auth'
+import { getUser, logout } from '@/utils/auth'
 import { ElMessageBox } from 'element-plus'
 import {
   DataAnalysis,
@@ -78,7 +84,7 @@ import {
   Search,
   SwitchButton
 } from '@element-plus/icons-vue'
-import { referenceImages } from '@/data/mock'
+import request from '@/api/request'
 import { useIdleTimeout } from '@/composables/useIdleTimeout'
 
 const route = useRoute()
@@ -105,6 +111,17 @@ const currentPageTitle = computed(() => {
   return pageTitles[route.path] || '管理后台'
 })
 
+const searchKeyword = ref('')
+
+const handleSearch = () => {
+  const keyword = searchKeyword.value.trim()
+  if (keyword) {
+    router.push({ path: route.path, query: { keyword } })
+  } else {
+    router.push({ path: route.path })
+  }
+}
+
 const handleLogout = () => {
   ElMessageBox.confirm('确定退出登录？', '提示', {
     confirmButtonText: '确定',
@@ -113,12 +130,7 @@ const handleLogout = () => {
   }).then(async () => {
     // 调用后端登出接口
     try {
-      await fetch('/api/admin/auth/logout', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${getToken()}`
-        }
-      })
+      await request.post('/admin/auth/logout')
     } catch {
       // 忽略登出接口错误
     }
@@ -298,10 +310,29 @@ const handleLogout = () => {
 .admin-user__avatar {
   width: 36px;
   height: 36px;
-  display: block;
-  object-fit: cover;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-pill);
+  background: var(--color-primary);
+  color: #fff;
+  font-size: 15px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.header-search__input {
+  flex: 1;
+  border: none;
+  outline: none;
+  background: transparent;
+  font-size: 14px;
+  color: var(--color-text);
+}
+
+.header-search__input::placeholder {
+  color: var(--color-text-muted);
 }
 
 .admin-content {

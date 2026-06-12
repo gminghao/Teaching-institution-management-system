@@ -3,14 +3,16 @@
     <section class="finance-head">
       <div>
         <h2>财务概览</h2>
-        <p>本月实时财务数据更新至 2026年06月11日</p>
+        <p>本月实时财务数据更新至 {{ currentDate }}</p>
       </div>
       <div class="head-actions">
-        <button type="button" class="ghost-btn">
-          <el-icon><Download /></el-icon>
-          导出报表
-        </button>
-        <button type="button" class="primary-btn">
+        <el-tooltip content="暂不支持">
+          <button type="button" class="ghost-btn" disabled>
+            <el-icon><Download /></el-icon>
+            导出报表
+          </button>
+        </el-tooltip>
+        <button type="button" class="primary-btn" @click="openPaymentDialog">
           <el-icon><Plus /></el-icon>
           登记缴费
         </button>
@@ -30,19 +32,13 @@
 
     <section class="finance-panels">
       <article class="trend-card">
-        <h3>营收趋势 (Revenue Trend)</h3>
+        <h3>缴费状态分布 (Payment Status)</h3>
         <div class="chart">
-          <div class="axis">
-            <span>¥400k</span>
-            <span>¥300k</span>
-            <span>¥200k</span>
-            <span>¥100k</span>
-            <span>¥0</span>
-          </div>
-          <div class="bars">
-            <div v-for="bar in bars" :key="bar.month" class="bar-item">
-              <span :style="{ height: bar.height }" />
-              <strong>{{ bar.month }}</strong>
+          <div class="bars bars--status">
+            <div v-for="bar in bars" :key="bar.label" class="bar-item">
+              <span :style="{ height: bar.height }" :class="bar.tone" />
+              <strong>{{ bar.label }}</strong>
+              <small>{{ bar.count }}</small>
             </div>
           </div>
         </div>
@@ -51,7 +47,7 @@
       <article class="recent-payments">
         <header>
           <h3>最近缴费记录</h3>
-          <a href="#">查看全部</a>
+          <a @click="router.push('/admin/enrollments')">查看全部</a>
         </header>
         <div class="payment-list">
           <div v-for="tx in transactions.slice(0, 3)" :key="tx.id" class="payment-item">
@@ -74,7 +70,7 @@
         <h3>缴费明细流水</h3>
         <label>
           <el-icon><Search /></el-icon>
-          <input type="text" placeholder="搜索订单号或姓名...">
+          <input type="text" v-model="searchTerm" placeholder="搜索订单号或姓名..." @input="handleSearch">
         </label>
       </header>
       <div class="table-wrap">
@@ -87,7 +83,6 @@
               <th class="right">金额 (Amount)</th>
               <th>支付方式 (Method)</th>
               <th>状态 (Status)</th>
-              <th>经办人 (Operator)</th>
             </tr>
           </thead>
           <tbody>
@@ -100,31 +95,97 @@
               <td>
                 <span :class="['tx-status', tx.paymentStatus]">{{ statusText(tx.paymentStatus) }}</span>
               </td>
-              <td class="muted">{{ tx.adminUsername }}</td>
             </tr>
           </tbody>
         </table>
       </div>
       <footer>
-        <span>显示 1-4 条，共 1,248 条记录</span>
-        <nav>
-          <button type="button" disabled>&lt;</button>
-          <button type="button" class="active">1</button>
-          <button type="button">2</button>
-          <button type="button">3</button>
-          <span>...</span>
-          <button type="button">&gt;</button>
-        </nav>
+        <span>共 {{ total }} 条记录</span>
+        <el-pagination
+          v-model:current-page="currentPage"
+          v-model:page-size="pageSize"
+          :total="total"
+          :page-sizes="[10, 20, 50]"
+          layout="sizes, prev, pager, next"
+          @current-change="handlePageChange"
+          @size-change="handleSizeChange"
+        />
       </footer>
     </section>
+
+    <!-- 登记缴费弹窗 -->
+    <el-dialog v-model="paymentDialogVisible" title="登记缴费" width="480px" @close="resetPaymentForm">
+      <el-form ref="paymentFormRef" :model="paymentForm" :rules="paymentRules" label-width="100px">
+        <el-form-item label="选择订单" prop="orderId">
+          <el-select v-model="paymentForm.orderId" placeholder="请选择未缴/部分缴订单" style="width: 100%" @change="onOrderChange">
+            <el-option
+              v-for="order in unpaidOrders"
+              :key="order.id"
+              :label="`${order.orderNo} - ${order.studentName} (${order.courseTitle})`"
+              :value="order.id"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="缴费金额" prop="amount">
+          <el-input-number v-model="paymentForm.amount" :min="0.01" :precision="2" :step="100" style="width: 100%" />
+        </el-form-item>
+        <el-form-item label="支付方式" prop="paymentMethod">
+          <el-select v-model="paymentForm.paymentMethod" placeholder="请选择支付方式" style="width: 100%">
+            <el-option label="现金" value="CASH" />
+            <el-option label="银行转账" value="BANK_TRANSFER" />
+            <el-option label="微信支付" value="WECHAT" />
+            <el-option label="支付宝" value="ALIPAY" />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="经办人" prop="operatorName">
+          <el-input v-model="paymentForm.operatorName" placeholder="请输入经办人姓名" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="paymentDialogVisible = false">取消</el-button>
+        <el-button type="primary" @click="submitPayment">确认缴费</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
 import { computed, onMounted, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { Download, Money, Plus, Search, TrendCharts, UserFilled, Wallet } from '@element-plus/icons-vue'
-import { getFinanceSummary, getEnrollments } from '@/api/admin'
+import { ElMessage } from 'element-plus'
+import { getFinanceSummary, getEnrollments, createPayment } from '@/api/admin'
 import { formatMoney } from '@/utils/format'
+
+const router = useRouter()
+
+// 1. 动态日期
+const currentDate = new Date().toLocaleDateString('zh-CN')
+
+// 搜索、分页
+const searchTerm = ref('')
+const currentPage = ref(1)
+const pageSize = ref(10)
+const total = ref(0)
+
+// 登记缴费弹窗
+const paymentDialogVisible = ref(false)
+const paymentFormRef = ref(null)
+const unpaidOrders = ref([])
+const paymentForm = ref({
+  orderId: '',
+  amount: 0,
+  paymentMethod: '',
+  operatorName: ''
+})
+const paymentRules = {
+  orderId: [{ required: true, message: '请选择订单', trigger: 'change' }],
+  amount: [
+    { required: true, message: '请输入金额', trigger: 'blur' },
+    { type: 'number', min: 0.01, message: '金额必须大于0', trigger: 'blur' }
+  ],
+  paymentMethod: [{ required: true, message: '请选择支付方式', trigger: 'change' }]
+}
 
 const summary = ref({
   totalPaidAmount: 0,
@@ -136,6 +197,20 @@ const summary = ref({
 
 const transactions = ref([])
 const loading = ref(false)
+
+// 4. 数据驱动的柱状图（paid/unpaid/partial 计数对比）
+const bars = computed(() => {
+  const counts = [
+    { label: '已缴费', count: summary.value.paidCount || 0, tone: 'success' },
+    { label: '未缴费', count: summary.value.unpaidCount || 0, tone: 'danger' },
+    { label: '部分缴费', count: summary.value.partialCount || 0, tone: 'warning' }
+  ]
+  const maxCount = Math.max(...counts.map(c => c.count), 1)
+  return counts.map(c => ({
+    ...c,
+    height: `${(c.count / maxCount) * 100}%`
+  }))
+})
 
 const stats = computed(() => [
   { icon: Money, label: '已缴金额 (Paid Amount)', value: `¥${formatMoney(summary.value.totalPaidAmount)}`, note: '', tone: 'success' },
@@ -158,9 +233,17 @@ const loadSummary = async () => {
 const loadRecords = async () => {
   loading.value = true
   try {
-    const res = await getEnrollments({ pageNum: 1, pageSize: 10 })
+    const params = {
+      pageNum: currentPage.value,
+      pageSize: pageSize.value
+    }
+    if (searchTerm.value) {
+      params.keyword = searchTerm.value
+    }
+    const res = await getEnrollments(params)
     if (res.code === 200) {
       transactions.value = res.data.list || []
+      total.value = res.data.total || 0
     }
   } catch (e) {
     console.error('Failed to load records:', e)
@@ -175,6 +258,87 @@ const statusText = (status) => {
   if (status === 'UNPAID') return '未缴费'
   if (status === 'REFUNDED') return '已退款'
   return status || '未知'
+}
+
+// 搜索防抖
+let searchTimer = null
+const handleSearch = () => {
+  clearTimeout(searchTimer)
+  searchTimer = setTimeout(() => {
+    currentPage.value = 1
+    loadRecords()
+  }, 300)
+}
+
+// 分页
+const handlePageChange = (page) => {
+  currentPage.value = page
+  loadRecords()
+}
+
+const handleSizeChange = (size) => {
+  pageSize.value = size
+  currentPage.value = 1
+  loadRecords()
+}
+
+// 登记缴费弹窗
+const loadUnpaidOrders = async () => {
+  try {
+    const res = await getEnrollments({ pageNum: 1, pageSize: 200, paymentStatus: 'UNPAID' })
+    if (res.code === 200) {
+      const unpaidList = (res.data.list || []).filter(o => o.paymentStatus !== 'PAID')
+      unpaidOrders.value = unpaidList
+    }
+  } catch (e) {
+    console.error('Failed to load unpaid orders:', e)
+  }
+}
+
+const openPaymentDialog = () => {
+  loadUnpaidOrders()
+  paymentDialogVisible.value = true
+}
+
+const onOrderChange = (orderId) => {
+  const order = unpaidOrders.value.find(o => o.id === orderId)
+  if (order) {
+    paymentForm.value.amount = order.registrationFee || 0
+  }
+}
+
+const submitPayment = async () => {
+  if (!paymentFormRef.value) return
+  await paymentFormRef.value.validate(async (valid) => {
+    if (!valid) return
+    try {
+      const res = await createPayment({
+        enrollmentId: paymentForm.value.orderId,
+        amount: paymentForm.value.amount,
+        paymentMethod: paymentForm.value.paymentMethod,
+        operatorName: paymentForm.value.operatorName
+      })
+      if (res.code === 200) {
+        ElMessage.success('缴费登记成功')
+        paymentDialogVisible.value = false
+        resetPaymentForm()
+        loadSummary()
+        loadRecords()
+      } else {
+        ElMessage.error(res.message || '缴费登记失败')
+      }
+    } catch (e) {
+      console.error('Failed to create payment:', e)
+      ElMessage.error('缴费登记失败，请稍后重试')
+    }
+  })
+}
+
+const resetPaymentForm = () => {
+  paymentForm.value = { orderId: '', amount: 0, paymentMethod: '', operatorName: '' }
+  if (paymentFormRef.value) {
+    paymentFormRef.value.resetFields()
+  }
 }
 
 onMounted(() => {
@@ -230,6 +394,11 @@ onMounted(() => {
   color: var(--color-text);
   background: var(--color-surface);
   border: 1px solid var(--color-border);
+}
+
+.ghost-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .primary-btn {
@@ -329,18 +498,6 @@ onMounted(() => {
   border-bottom: 1px solid var(--color-border);
 }
 
-.axis {
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 58px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  color: var(--color-text-muted);
-  font-size: 13px;
-  font-weight: 800;
-}
-
 .chart::before {
   position: absolute;
   inset: 0 0 0 58px;
@@ -354,7 +511,7 @@ onMounted(() => {
   z-index: 1;
   height: 92%;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(3, 1fr);
   align-items: end;
   gap: 28px;
 }
@@ -373,10 +530,19 @@ onMounted(() => {
   display: block;
   background: rgba(15, 76, 129, 0.38);
   border-radius: 8px 8px 0 0;
+  transition: height 0.4s ease;
 }
 
-.bar-item:last-child span {
-  background: var(--color-primary-container);
+.bar-item span.success {
+  background: var(--color-success);
+}
+
+.bar-item span.danger {
+  background: var(--color-danger);
+}
+
+.bar-item span.warning {
+  background: var(--color-warning);
 }
 
 .bar-item strong {
@@ -397,6 +563,7 @@ onMounted(() => {
   font-size: 14px;
   font-weight: 800;
   text-decoration: none;
+  cursor: pointer;
 }
 
 .payment-list {
@@ -519,7 +686,7 @@ onMounted(() => {
 
 table {
   width: 100%;
-  min-width: 950px;
+  min-width: 820px;
   border-collapse: collapse;
 }
 
@@ -591,25 +758,6 @@ td {
   gap: 18px;
   color: var(--color-text-muted);
   background: var(--color-surface-muted);
-}
-
-.transaction-card nav {
-  display: flex;
-  gap: 6px;
-}
-
-.transaction-card nav button {
-  width: 34px;
-  height: 34px;
-  border: 1px solid var(--color-border);
-  border-radius: 7px;
-  background: var(--color-surface);
-  cursor: pointer;
-}
-
-.transaction-card nav button.active {
-  color: #fff;
-  background: var(--color-primary-deep);
 }
 
 @media (max-width: 1120px) {

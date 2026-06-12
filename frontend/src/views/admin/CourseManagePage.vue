@@ -5,7 +5,7 @@
         <h2>课程管理</h2>
         <p>维护课程目录、价格和上线状态。</p>
       </div>
-      <button type="button">
+      <button type="button" @click="openCreateDialog">
         <el-icon><Plus /></el-icon>
         新增课程
       </button>
@@ -14,17 +14,17 @@
     <section class="filter-card">
       <label>
         <el-icon><Search /></el-icon>
-        <input type="text" placeholder="搜索课程名称、讲师或分类...">
+        <input v-model="searchKeyword" type="text" placeholder="搜索课程名称、讲师或分类...">
       </label>
-      <select>
-        <option>全部分类</option>
-        <option v-for="category in courseCategories.slice(1)" :key="category">{{ category }}</option>
+      <select v-model="filterCategory" @change="loadCourses()">
+        <option value="">全部分类</option>
+        <option v-for="cat in categoryOptions" :key="cat.id" :value="cat.id">{{ cat.name }}</option>
       </select>
-      <select>
-        <option>所有状态</option>
-        <option>已上架</option>
-        <option>草稿</option>
-        <option>已下架</option>
+      <select v-model="filterStatus" @change="loadCourses()">
+        <option value="">所有状态</option>
+        <option value="ONLINE">已上架</option>
+        <option value="DRAFT">草稿</option>
+        <option value="OFFLINE">已下架</option>
       </select>
     </section>
 
@@ -35,7 +35,6 @@
             <th>课程</th>
             <th>分类</th>
             <th>讲师</th>
-            <th>周期</th>
             <th class="right">价格</th>
             <th>状态</th>
             <th class="right">操作</th>
@@ -52,8 +51,7 @@
               </div>
             </td>
             <td>{{ course.categoryName }}</td>
-            <td>{{ course.instructor }}</td>
-            <td>{{ course.duration }}</td>
+            <td>{{ course.teacherName }}</td>
             <td class="right strong">¥{{ course.price }}</td>
             <td>
               <span :class="['status-pill', courseStatusTone(course.status)]">
@@ -61,6 +59,7 @@
               </span>
             </td>
             <td class="right action-cell">
+              <span @click="openEditDialog(course)">编辑</span>
               <span v-if="course.status === 'DRAFT'" @click="handleOnline(course.id)">上架</span>
               <span v-else-if="course.status === 'ONLINE'" @click="handleOffline(course.id)">下架</span>
             </td>
@@ -68,31 +67,154 @@
         </tbody>
       </table>
     </section>
+
+    <section class="pagination-wrap">
+      <el-pagination
+        v-model:current-page="currentPage"
+        v-model:page-size="pageSize"
+        :total="total"
+        :page-sizes="[10, 20, 50]"
+        layout="total, sizes, prev, pager, next"
+        @current-change="loadCourses()"
+        @size-change="loadCourses()"
+      />
+    </section>
+
+    <!-- 新增/编辑课程弹窗 -->
+    <el-dialog
+      v-model="dialogVisible"
+      :title="isEditMode ? '编辑课程' : '新增课程'"
+      width="560px"
+      destroy-on-close
+    >
+      <el-form
+        ref="formRef"
+        :model="courseForm"
+        :rules="formRules"
+        label-width="100px"
+        label-position="right"
+      >
+        <el-form-item label="课程分类" prop="categoryId">
+          <el-select v-model="courseForm.categoryId" placeholder="请选择分类" style="width: 100%">
+            <el-option
+              v-for="cat in categoryOptions"
+              :key="cat.id"
+              :label="cat.name"
+              :value="cat.id"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item label="课程标题" prop="title">
+          <el-input v-model="courseForm.title" placeholder="请输入课程标题" maxlength="200" show-word-limit />
+        </el-form-item>
+        <el-form-item label="副标题" prop="subtitle">
+          <el-input v-model="courseForm.subtitle" placeholder="请输入副标题" />
+        </el-form-item>
+        <el-form-item label="讲师姓名" prop="teacherName">
+          <el-input v-model="courseForm.teacherName" placeholder="请输入讲师姓名" />
+        </el-form-item>
+        <el-form-item label="课程价格" prop="price">
+          <el-input-number v-model="courseForm.price" :min="0" :precision="2" style="width: 100%" />
+        </el-form-item>
+        <el-form-item label="报名费" prop="registrationFee">
+          <el-input-number v-model="courseForm.registrationFee" :min="0" :precision="2" style="width: 100%" />
+        </el-form-item>
+        <el-form-item label="课程描述" prop="description">
+          <el-input v-model="courseForm.description" type="textarea" :rows="3" placeholder="请输入课程描述" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <el-button @click="dialogVisible = false">取消</el-button>
+        <el-button type="primary" :loading="submitting" @click="handleSubmit">{{ isEditMode ? '保存' : '创建' }}</el-button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch, nextTick } from 'vue'
 import { Plus, Search } from '@element-plus/icons-vue'
 import { ElMessage } from 'element-plus'
-import { getAdminCourses, onlineCourse, offlineCourse } from '@/api/admin'
+import {
+  getAdminCourses,
+  getCategories,
+  createCourse,
+  updateCourse,
+  onlineCourse,
+  offlineCourse
+} from '@/api/admin'
 import { courseStatusMap, courseStatusTone } from '@/utils/format'
 
 const courses = ref([])
 const loading = ref(false)
 const currentPage = ref(1)
+const pageSize = ref(10)
 const total = ref(0)
 const searchKeyword = ref('')
 const filterCategory = ref('')
 const filterStatus = ref('')
-const courseCategories = ref(['全部分类'])
+const categoryOptions = ref([])
+
+// 弹窗相关
+const dialogVisible = ref(false)
+const isEditMode = ref(false)
+const submitting = ref(false)
+const editingId = ref(null)
+const formRef = ref(null)
+
+const emptyForm = () => ({
+  categoryId: null,
+  title: '',
+  subtitle: '',
+  teacherName: '',
+  price: 0,
+  registrationFee: 0,
+  description: ''
+})
+
+const courseForm = ref(emptyForm())
+
+const formRules = {
+  categoryId: [{ required: true, message: '请选择课程分类', trigger: 'change' }],
+  title: [{ required: true, message: '请输入课程标题', trigger: 'blur' }],
+  price: [
+    { required: true, message: '请输入课程价格', trigger: 'blur' },
+    { type: 'number', min: 0, message: '价格不能为负', trigger: 'blur' }
+  ],
+  registrationFee: [
+    { required: true, message: '请输入报名费', trigger: 'blur' },
+    { type: 'number', min: 0, message: '报名费不能为负', trigger: 'blur' }
+  ]
+}
+
+// 防抖搜索
+let searchTimer = null
+watch(searchKeyword, () => {
+  if (searchTimer) clearTimeout(searchTimer)
+  searchTimer = setTimeout(() => {
+    currentPage.value = 1
+    loadCourses()
+  }, 300)
+})
+
+// 从API加载分类选项
+async function loadCategories() {
+  try {
+    const res = await getCategories()
+    if (res.code === 200) {
+      categoryOptions.value = res.data || []
+    }
+  } catch (e) {
+    console.error('Failed to load categories:', e)
+  }
+}
 
 const loadCourses = async () => {
   loading.value = true
   try {
     const res = await getAdminCourses({
       pageNum: currentPage.value,
-      pageSize: 10,
+      pageSize: pageSize.value,
       keyword: searchKeyword.value || undefined,
       categoryId: filterCategory.value || undefined,
       status: filterStatus.value || undefined
@@ -105,6 +227,61 @@ const loadCourses = async () => {
     console.error('Failed to load courses:', e)
   } finally {
     loading.value = false
+  }
+}
+
+// 新增弹窗
+function openCreateDialog() {
+  isEditMode.value = false
+  editingId.value = null
+  courseForm.value = emptyForm()
+  dialogVisible.value = true
+  nextTick(() => formRef.value?.clearValidate())
+}
+
+// 编辑弹窗
+function openEditDialog(course) {
+  isEditMode.value = true
+  editingId.value = course.id
+  courseForm.value = {
+    categoryId: course.categoryId,
+    title: course.title,
+    subtitle: course.subtitle || '',
+    teacherName: course.teacherName || '',
+    price: course.price != null ? Number(course.price) : 0,
+    registrationFee: course.registrationFee != null ? Number(course.registrationFee) : 0,
+    description: course.description || ''
+  }
+  dialogVisible.value = true
+  nextTick(() => formRef.value?.clearValidate())
+}
+
+// 提交表单
+async function handleSubmit() {
+  const valid = await formRef.value?.validate().catch(() => false)
+  if (!valid) return
+
+  submitting.value = true
+  try {
+    if (isEditMode.value) {
+      const res = await updateCourse(editingId.value, courseForm.value)
+      if (res.code === 200) {
+        ElMessage.success('课程更新成功')
+        dialogVisible.value = false
+        loadCourses()
+      }
+    } else {
+      const res = await createCourse(courseForm.value)
+      if (res.code === 200) {
+        ElMessage.success('课程创建成功')
+        dialogVisible.value = false
+        loadCourses()
+      }
+    }
+  } catch (e) {
+    ElMessage.error(e.message || '操作失败')
+  } finally {
+    submitting.value = false
   }
 }
 
@@ -132,7 +309,10 @@ const handleOffline = async (id) => {
   }
 }
 
-onMounted(loadCourses)
+onMounted(() => {
+  loadCategories()
+  loadCourses()
+})
 </script>
 
 <style scoped>
@@ -222,7 +402,7 @@ label input {
 
 table {
   width: 100%;
-  min-width: 980px;
+  min-width: 780px;
   border-collapse: collapse;
 }
 
@@ -295,6 +475,21 @@ th {
 .action-cell {
   color: var(--color-primary);
   font-weight: 800;
+}
+
+.action-cell span {
+  cursor: pointer;
+  margin-left: 12px;
+}
+
+.action-cell span:first-child {
+  margin-left: 0;
+}
+
+.pagination-wrap {
+  display: flex;
+  justify-content: flex-end;
+  padding: 4px 0;
 }
 
 @media (max-width: 900px) {

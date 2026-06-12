@@ -4,10 +4,13 @@ import com.institution.coursemanager.dto.CourseCreateDTO;
 import com.institution.coursemanager.dto.CourseUpdateDTO;
 import com.institution.coursemanager.service.CourseService;
 import com.institution.coursemanager.vo.AdminCourseVO;
+import com.institution.coursemanager.vo.CategoryVO;
 import com.institution.coursemanager.vo.PageResult;
 import com.institution.coursemanager.vo.Result;
 import jakarta.validation.Valid;
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,15 +31,16 @@ public class AdminCourseController {
     private CourseService courseService;
 
     /**
-     * 课程列表（支持关键字和状态筛选）
+     * 课程列表（支持关键字、状态和分类筛选）
      */
     @GetMapping
     public Result<PageResult<AdminCourseVO>> list(
             @RequestParam(required = false) String keyword,
             @RequestParam(required = false) String status,
+            @RequestParam(required = false) Long categoryId,
             @RequestParam(defaultValue = "1") Integer pageNum,
             @RequestParam(defaultValue = "10") Integer pageSize) {
-        return Result.success(courseService.getAdminCoursePage(pageNum, pageSize, keyword, status));
+        return Result.success(courseService.getAdminCoursePage(pageNum, pageSize, keyword, status, categoryId));
     }
 
     /**
@@ -71,5 +75,30 @@ public class AdminCourseController {
     public Result<Void> offline(@PathVariable Long id) {
         courseService.offlineCourse(id);
         return Result.success();
+    }
+
+    /**
+     * 课程详情
+     */
+    @GetMapping("/{id}")
+    public Result<AdminCourseVO> detail(@PathVariable Long id) {
+        return Result.success(courseService.getAdminCourseDetail(id));
+    }
+
+    /**
+     * 删除课程
+     */
+    @DeleteMapping("/{id}")
+    public Result<Void> delete(@PathVariable Long id) {
+        courseService.deleteCourse(id);
+        return Result.success();
+    }
+
+    /**
+     * 课程分类列表（仅启用状态）
+     */
+    @GetMapping("/categories")
+    public Result<List<CategoryVO>> categories() {
+        return Result.success(courseService.getCategories());
     }
 }

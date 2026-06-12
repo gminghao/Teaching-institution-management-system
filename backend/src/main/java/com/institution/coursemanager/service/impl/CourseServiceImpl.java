@@ -18,6 +18,7 @@ import com.institution.coursemanager.mapper.CourseMapper;
 import com.institution.coursemanager.mapper.EnrollmentOrderMapper;
 import com.institution.coursemanager.service.CourseService;
 import com.institution.coursemanager.vo.AdminCourseVO;
+import com.institution.coursemanager.vo.CategoryVO;
 import com.institution.coursemanager.vo.PageResult;
 import com.institution.coursemanager.vo.PublicCourseDetailVO;
 import com.institution.coursemanager.vo.PublicCourseVO;
@@ -179,10 +180,10 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     }
 
     @Override
-    public PageResult<AdminCourseVO> getAdminCoursePage(Integer pageNum, Integer pageSize, String keyword, String status) {
+    public PageResult<AdminCourseVO> getAdminCoursePage(Integer pageNum, Integer pageSize, String keyword, String status, Long categoryId) {
         Page<AdminCourseVO> page = courseMapper.selectAdminPage(
                 new Page<>(normalizePageNum(pageNum), normalizePageSize(pageSize)),
-                null,
+                categoryId,
                 keyword,
                 status);
         List<AdminCourseVO> records = page.getRecords();
@@ -292,5 +293,19 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
             return DEFAULT_PAGE_SIZE;
         }
         return Math.min(pageSize, MAX_PAGE_SIZE);
+    }
+
+    @Override
+    public List<CategoryVO> getCategories() {
+        List<CourseCategory> categories = courseCategoryMapper.selectList(
+                new LambdaQueryWrapper<CourseCategory>()
+                        .eq(CourseCategory::getStatus, 1)
+                        .orderByAsc(CourseCategory::getSortOrder));
+        return categories.stream().map(c -> {
+            CategoryVO vo = new CategoryVO();
+            vo.setId(c.getId());
+            vo.setName(c.getName());
+            return vo;
+        }).toList();
     }
 }

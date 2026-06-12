@@ -5,28 +5,32 @@
         <h2>报名管理</h2>
         <p>查看和管理学员课程报名及缴费情况。</p>
       </div>
-      <button type="button">
-        <el-icon><Plus /></el-icon>
-        新增报名
-      </button>
     </section>
 
     <section class="filter-card">
       <label>
         <el-icon><Document /></el-icon>
-        <input type="text" placeholder="订单编号...">
+        <input type="text" placeholder="订单编号..." v-model="searchKeyword" />
       </label>
       <label>
         <el-icon><User /></el-icon>
-        <input type="text" placeholder="学生姓名或邮箱...">
+        <input type="text" placeholder="学生姓名..." v-model="searchStudentName" />
       </label>
-      <select>
-        <option>所有状态</option>
-        <option>待处理</option>
-        <option>已批准</option>
-        <option>候补</option>
+      <select v-model="filterEnrollmentStatus" @change="loadEnrollments()">
+        <option value="">全部状态</option>
+        <option value="PENDING">待处理</option>
+        <option value="CONTACTED">已联系</option>
+        <option value="ENROLLED">已报名</option>
+        <option value="CANCELLED">已取消</option>
       </select>
-      <button type="button" class="ghost-btn">
+      <select v-model="filterPaymentStatus" @change="loadEnrollments()">
+        <option value="">全部缴费</option>
+        <option value="UNPAID">未缴费</option>
+        <option value="PARTIAL">部分缴费</option>
+        <option value="PAID">已缴费</option>
+        <option value="REFUNDED">已退款</option>
+      </select>
+      <button type="button" class="ghost-btn" @click="loadEnrollments()">
         <el-icon><Filter /></el-icon>
         筛选
       </button>
@@ -46,20 +50,19 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(item, index) in rows" :key="item.orderNo">
+          <tr v-for="item in rows" :key="item.orderNo">
             <td class="order-cell">{{ item.orderNo }}</td>
             <td>
               <div class="student-cell">
                 <span>{{ item.studentName.slice(0, 1) }}</span>
                 <div>
                   <strong>{{ item.studentName }}</strong>
-                  <small>{{ item.email }}</small>
+                  <small>{{ item.studentEmail }}</small>
                 </div>
               </div>
             </td>
             <td>
               <strong>{{ item.courseTitle }}</strong>
-              <small class="course-code">{{ item.code }}</small>
             </td>
             <td>
               <strong>{{ item.amountText }}</strong>
@@ -71,29 +74,55 @@
             <td>
               <span :class="['status-pill', item.enrollmentTone]">{{ item.enrollmentStatusText }}</span>
             </td>
-            <td class="right action-cell">{{ index === 0 ? '查看' : '修改状态' }}</td>
+            <td class="right action-cell">
+              <template v-if="item.enrollmentStatus !== 'ENROLLED' && item.enrollmentStatus !== 'CANCELLED'">
+                <a href="javascript:void(0)" @click="openStatusDialog(item)">修改状态</a>
+              </template>
+            </td>
           </tr>
         </tbody>
       </table>
       <footer>
-        <span>显示 1 到 {{ rows.length }} 条，共 {{ rows.length }} 条结果</span>
-        <nav>
-          <button type="button" disabled>&lt;</button>
-          <button type="button" class="active">1</button>
-          <button type="button">2</button>
-          <button type="button">3</button>
-          <span>...</span>
-          <button type="button">&gt;</button>
-        </nav>
+        <span>显示 {{ rows.length > 0 ? 1 : 0 }} 到 {{ rows.length }} 条，共 {{ total }} 条结果</span>
+        <el-pagination
+          v-model:current-page="currentPage"
+          :page-size="pageSize"
+          :total="total"
+          layout="prev, pager, next"
+          @current-change="loadEnrollments()"
+        />
       </footer>
     </section>
+
+    <!-- 修改状态弹窗 -->
+    <el-dialog v-model="statusDialogVisible" title="修改报名状态" width="420px" :close-on-click-modal="false">
+      <div v-if="statusTarget" class="status-dialog-body">
+        <p>
+          <strong>订单编号：</strong>{{ statusTarget.orderNo }}
+        </p>
+        <p>
+          <strong>当前状态：</strong>
+          <span :class="['status-pill', statusTarget.enrollmentTone]">{{ statusTarget.enrollmentStatusText }}</span>
+        </p>
+        <div class="status-select-row">
+          <label>目标状态：</label>
+          <select v-model="statusNextValue">
+            <option v-for="opt in statusOptions" :key="opt.value" :value="opt.value">{{ opt.label }}</option>
+          </select>
+        </div>
+      </div>
+      <template #footer>
+        <button type="button" class="ghost-btn" @click="statusDialogVisible = false">取消</button>
+        <button type="button" class="primary-btn" :disabled="!statusNextValue" @click="submitStatusChange">确认</button>
+      </template>
+    </el-dialog>
   </div>
 </template>
 
 <script setup>
-import { onMounted, ref } from 'vue'
-import { Document, Filter, Plus, User } from '@element-plus/icons-vue'
-import { getEnrollments } from '@/api/admin'
+import { computed, onMounted, ref, watch } from 'vue'
+import { Document, Filter, User } from '@element-plus/icons-vue'
+import { getEnrollments, updateEnrollmentStatus } from '@/api/admin'
 import {
   enrollmentStatusMap,
   enrollmentStatusTone,
@@ -101,24 +130,42 @@ import {
   paymentStatusMap,
   paymentStatusTone
 } from '@/utils/format'
+import { ElMessage } from 'element-plus'
 
 const enrollments = ref([])
 const loading = ref(false)
 const currentPage = ref(1)
+const pageSize = ref(10)
 const total = ref(0)
 const searchKeyword = ref('')
+const searchStudentName = ref('')
 const filterEnrollmentStatus = ref('')
 const filterPaymentStatus = ref('')
 
 const rows = ref([])
+
+// ---- debounce helper ----
+let debounceTimer = null
+function debounce(fn, delay = 300) {
+  return (...args) => {
+    clearTimeout(debounceTimer)
+    debounceTimer = setTimeout(() => fn(...args), delay)
+  }
+}
+
+const debouncedLoad = debounce(() => loadEnrollments(), 300)
+
+watch(searchKeyword, () => debouncedLoad())
+watch(searchStudentName, () => debouncedLoad())
 
 const loadEnrollments = async () => {
   loading.value = true
   try {
     const res = await getEnrollments({
       pageNum: currentPage.value,
-      pageSize: 10,
+      pageSize: pageSize.value,
       keyword: searchKeyword.value || undefined,
+      studentName: searchStudentName.value || undefined,
       enrollmentStatus: filterEnrollmentStatus.value || undefined,
       paymentStatus: filterPaymentStatus.value || undefined
     })
@@ -139,6 +186,54 @@ const loadEnrollments = async () => {
     console.error('Failed to load enrollments:', e)
   } finally {
     loading.value = false
+  }
+}
+
+// ---- 状态修改弹窗 ----
+const statusDialogVisible = ref(false)
+const statusTarget = ref(null)
+const statusNextValue = ref('')
+
+// 合法状态转换映射
+const legalTransitions = {
+  PENDING: ['CONTACTED', 'CANCELLED'],
+  CONTACTED: ['ENROLLED', 'CANCELLED'],
+  ENROLLED: [],
+  CANCELLED: []
+}
+
+const statusOptions = computed(() => {
+  if (!statusTarget.value) return []
+  const current = statusTarget.value.enrollmentStatus
+  const allowed = legalTransitions[current] || []
+  return allowed.map(val => ({
+    value: val,
+    label: enrollmentStatusMap[val] || val
+  }))
+})
+
+function openStatusDialog(item) {
+  statusTarget.value = item
+  statusNextValue.value = ''
+  statusDialogVisible.value = true
+}
+
+async function submitStatusChange() {
+  if (!statusNextValue.value || !statusTarget.value) return
+  try {
+    const res = await updateEnrollmentStatus(statusTarget.value.id, {
+      enrollmentStatus: statusNextValue.value
+    })
+    if (res.code === 200) {
+      ElMessage.success('状态修改成功')
+      statusDialogVisible.value = false
+      loadEnrollments()
+    } else {
+      ElMessage.error(res.message || '状态修改失败')
+    }
+  } catch (e) {
+    console.error('Failed to update enrollment status:', e)
+    ElMessage.error('状态修改失败，请重试')
   }
 }
 
@@ -170,8 +265,8 @@ onMounted(loadEnrollments)
   color: var(--color-text-muted);
 }
 
-.manage-head button,
-.ghost-btn {
+.ghost-btn,
+.primary-btn {
   height: 44px;
   padding: 0 18px;
   display: inline-flex;
@@ -180,11 +275,6 @@ onMounted(loadEnrollments)
   border-radius: var(--radius-control);
   cursor: pointer;
   font-weight: 800;
-}
-
-.manage-head button {
-  color: #fff;
-  background: var(--color-primary-deep);
   border: none;
 }
 
@@ -194,10 +284,20 @@ onMounted(loadEnrollments)
   border: 1px solid var(--color-border);
 }
 
+.primary-btn {
+  color: #fff;
+  background: var(--color-primary-deep);
+}
+
+.primary-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
 .filter-card {
   padding: 20px;
   display: grid;
-  grid-template-columns: minmax(230px, 1fr) minmax(260px, 1.2fr) 160px auto;
+  grid-template-columns: minmax(200px, 1fr) minmax(200px, 1fr) 150px 150px auto;
   gap: 14px;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
@@ -293,10 +393,6 @@ small {
   color: #ff0000;
 }
 
-.course-code {
-  font-size: 13px;
-}
-
 .status-pill {
   display: inline-flex;
   min-width: 54px;
@@ -331,9 +427,15 @@ small {
   text-align: right;
 }
 
-.action-cell {
+.action-cell a {
   color: var(--color-primary);
   font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.action-cell a:hover {
+  text-decoration: underline;
 }
 
 footer {
@@ -346,25 +448,27 @@ footer {
 
 footer span {
   color: var(--color-text-muted);
+  white-space: nowrap;
 }
 
-footer nav {
+/* dialog internal styles */
+.status-dialog-body p {
+  margin: 0 0 12px;
+}
+
+.status-select-row {
   display: flex;
-  gap: 8px;
+  align-items: center;
+  gap: 12px;
 }
 
-footer button {
-  width: 40px;
-  height: 40px;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 8px;
-  cursor: pointer;
+.status-select-row label {
+  white-space: nowrap;
+  font-weight: 600;
 }
 
-footer button.active {
-  color: #fff;
-  background: var(--color-primary-deep);
+.status-select-row select {
+  flex: 1;
 }
 
 @media (max-width: 1050px) {

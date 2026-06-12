@@ -1,6 +1,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { logout, getToken } from '@/utils/auth'
+import request from '@/api/request'
 
 /**
  * 空闲超时自动登出组合式函数
@@ -20,12 +21,7 @@ export function useIdleTimeout(timeout = 15 * 60 * 1000) {
       if (getToken()) {
         isIdle.value = true
         // 调用后端登出接口
-        fetch('/api/admin/auth/logout', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${getToken()}`
-          }
-        }).catch(() => {
+        request.post('/admin/auth/logout').catch(() => {
           // 忽略登出接口错误
         })
         // 本地登出

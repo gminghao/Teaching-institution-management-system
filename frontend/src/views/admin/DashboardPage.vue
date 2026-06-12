@@ -21,7 +21,7 @@
     <section class="recent-card">
       <header>
         <h3>最近报名</h3>
-        <button type="button">View All</button>
+        <button type="button" @click="$router.push('/admin/enrollments')">View All</button>
       </header>
       <div class="table-wrap">
         <table>
@@ -35,11 +35,11 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="item in mockEnrollments" :key="item.orderNo">
+            <tr v-for="item in recentEnrollments" :key="item.orderNo">
               <td class="link-cell">{{ item.orderNo }}</td>
               <td>{{ item.studentName }}</td>
               <td class="muted-cell">{{ item.courseTitle }}</td>
-              <td class="muted-cell">{{ item.date }}</td>
+              <td class="muted-cell">{{ item.createTime }}</td>
               <td>
                 <span :class="['status-pill', enrollmentStatusTone(item.enrollmentStatus)]">
                   {{ enrollmentStatusMap[item.enrollmentStatus] || item.enrollmentStatus }}
@@ -74,12 +74,12 @@ const metrics = computed(() => [
   { icon: Reading, label: '课程总数', value: String(overview.value.totalCourses), trend: '', tone: 'success' },
   { icon: Collection, label: '已上架课程', value: String(overview.value.onlineCourses), trend: '', tone: 'info' },
   { icon: User, label: '报名总数', value: String(overview.value.totalEnrollments), trend: '', tone: 'success' },
-  { icon: Timer, label: '待处理事项', value: String(overview.value.pendingEnrollments), trend: 'Requires attention', tone: 'warning' },
+  { icon: Timer, label: '待处理事项', value: String(overview.value.pendingEnrollments), trend: '', tone: 'warning' },
   { icon: Money, label: '已缴费', value: String(overview.value.paidCount), trend: '', tone: 'success', featured: true },
-  { icon: DataAnalysis, label: '未缴费', value: String(overview.value.unpaidCount), trend: 'Review Accounts', tone: 'danger' }
+  { icon: DataAnalysis, label: '未缴费', value: String(overview.value.unpaidCount), trend: '', tone: 'danger' }
 ])
 
-const mockEnrollments = computed(() => overview.value.recentEnrollments || [])
+const recentEnrollments = computed(() => overview.value.recentEnrollments || [])
 
 onMounted(async () => {
   try {

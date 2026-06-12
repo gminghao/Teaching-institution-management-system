@@ -1,7 +1,5 @@
 package com.institution.coursemanager.service.impl;
 
-import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.institution.coursemanager.entity.EnrollmentOrder;
 import com.institution.coursemanager.mapper.EnrollmentOrderMapper;
 import com.institution.coursemanager.service.FinanceService;
 import com.institution.coursemanager.vo.FinanceSummaryVO;
@@ -10,8 +8,7 @@ import java.util.Map;
 import org.springframework.stereotype.Service;
 
 @Service
-public class FinanceServiceImpl extends ServiceImpl<EnrollmentOrderMapper, EnrollmentOrder>
-        implements FinanceService {
+public class FinanceServiceImpl implements FinanceService {
 
     private final EnrollmentOrderMapper enrollmentOrderMapper;
 

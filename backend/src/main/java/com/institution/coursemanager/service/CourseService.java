@@ -5,9 +5,11 @@ import com.institution.coursemanager.dto.CourseCreateDTO;
 import com.institution.coursemanager.dto.CourseUpdateDTO;
 import com.institution.coursemanager.entity.Course;
 import com.institution.coursemanager.vo.AdminCourseVO;
+import com.institution.coursemanager.vo.CategoryVO;
 import com.institution.coursemanager.vo.PageResult;
 import com.institution.coursemanager.vo.PublicCourseDetailVO;
 import com.institution.coursemanager.vo.PublicCourseVO;
+import java.util.List;
 
 public interface CourseService extends IService<Course> {
 
@@ -25,7 +27,9 @@ public interface CourseService extends IService<Course> {
 
     PublicCourseDetailVO getPublicCourseDetail(Long id);
 
-    PageResult<AdminCourseVO> getAdminCoursePage(Integer pageNum, Integer pageSize, String keyword, String status);
+    PageResult<AdminCourseVO> getAdminCoursePage(Integer pageNum, Integer pageSize, String keyword, String status, Long categoryId);
 
     PageResult<PublicCourseVO> getPublicCoursePage(Integer pageNum, Integer pageSize, Long categoryId, String keyword);
+
+    List<CategoryVO> getCategories();
 }

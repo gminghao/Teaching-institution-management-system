@@ -1,9 +1,4 @@
-import { mockCourses } from '@/data/mock'
 import { formatMoney } from '@/utils/format'
-
-function fallbackCourse(index = 0) {
-  return mockCourses[index % mockCourses.length]
-}
 
 function teacherInitials(name) {
   if (!name) return 'NA'
@@ -16,29 +11,27 @@ function teacherInitials(name) {
     .toUpperCase()
 }
 
-export function toDisplayCourse(course, index = 0) {
-  const fallback = fallbackCourse(index)
-  const teacherName = course.teacherName || fallback.instructor.name
-  const description = course.description || course.subtitle || fallback.description
+export function toDisplayCourse(course) {
+  const teacherName = course.teacherName || '未知讲师'
 
   return {
     id: course.id,
-    title: course.title || fallback.title,
-    description,
-    category: course.categoryName || fallback.category,
-    duration: fallback.duration,
+    title: course.title || '未知课程',
+    description: course.description || course.subtitle || '',
+    category: course.categoryName || '未分类',
+    duration: '—',
     instructor: {
       name: teacherName,
       initials: teacherInitials(teacherName)
     },
     price: `¥${formatMoney(course.price)}`,
     registrationFee: `¥${formatMoney(course.registrationFee)}`,
-    format: fallback.format,
-    image: course.coverImage || fallback.image,
+    format: course.format || '在线',
+    image: course.coverImage || '',
     raw: course
   }
 }
 
 export function toDisplayCourses(courses = []) {
-  return courses.map((course, index) => toDisplayCourse(course, index))
+  return courses.map(toDisplayCourse)
 }
