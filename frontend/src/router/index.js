@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { getToken } from '@/utils/auth'
+import { getToken, removeToken, removeUser } from '@/utils/auth'
 
 const routes = [
   // 访客端路由
@@ -81,17 +81,46 @@ const router = createRouter({
   routes
 })
 
+/**
+ * 检查JWT Token是否过期
+ * @param {string} token JWT Token
+ * @returns {boolean} 是否过期
+ */
+function isTokenExpired(token) {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]))
+    const exp = payload.exp * 1000 // 转换为毫秒
+    return Date.now() >= exp
+  } catch {
+    return true
+  }
+}
+
 // 导航守卫：管理员端需要鉴权
 router.beforeEach(to => {
   const token = getToken()
   const requiresAuth = to.matched.some(record => record.meta.requiresAuth)
   const guestOnly = to.matched.some(record => record.meta.guestOnly)
 
-  if (requiresAuth && !token) {
-    return { name: 'AdminLogin', query: { redirect: to.fullPath } }
+  if (requiresAuth) {
+    if (!token) {
+      return { name: 'AdminLogin', query: { redirect: to.fullPath } }
+    }
+    // 检查Token是否过期
+    if (isTokenExpired(token)) {
+      removeToken()
+      removeUser()
+      return { name: 'AdminLogin', query: { redirect: to.fullPath } }
+    }
   }
 
   if (guestOnly && token) {
+    // 检查Token是否过期
+    if (isTokenExpired(token)) {
+      removeToken()
+      removeUser()
+      return true
+    }
     const redirect = typeof to.query.redirect === 'string' ? to.query.redirect : ''
     return redirect && redirect.startsWith('/admin') ? redirect : '/admin/dashboard'
   }

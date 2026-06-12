@@ -28,8 +28,8 @@ CREATE TABLE `admin_user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='管理员表';
 
 -- 初始管理员账号: admin / admin123 (BCrypt 加密)
-INSERT INTO `admin_user` (`username`, `password`, `real_name`, `status`)
-VALUES ('admin', '$2a$10$N.ZOn9G6w3Fz4nFHRXn5GOe9Th2jKZqK7TAKpXv4pG1wFkBmvUYCi', '系统管理员', 1);
+INSERT IGNORE INTO `admin_user` (`username`, `password`, `real_name`, `status`)
+VALUES ('admin', '$2a$10$CBr8M3z3oPFt2kD2D1BDG.WY5eJ.0PJcdJ6fLsAPrLv4K/0./QWmW', '系统管理员', 1);
 
 -- ============================================================
 -- 2. 课程分类表
@@ -44,14 +44,6 @@ CREATE TABLE `course_category` (
   `update_time` DATETIME     NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='课程分类表';
-
--- 初始分类数据
-INSERT INTO `course_category` (`name`, `sort_order`, `status`) VALUES
-('编程开发', 1, 1),
-('设计创意', 2, 1),
-('语言培训', 3, 1),
-('职业技能', 4, 1),
-('兴趣爱好', 5, 1);
 
 -- ============================================================
 -- 3. 课程表

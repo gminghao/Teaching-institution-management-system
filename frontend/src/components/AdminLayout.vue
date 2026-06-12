@@ -68,7 +68,7 @@
 <script setup>
 import { computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { getUser, logout } from '@/utils/auth'
+import { getUser, logout, getToken } from '@/utils/auth'
 import { ElMessageBox } from 'element-plus'
 import {
   DataAnalysis,
@@ -79,9 +79,13 @@ import {
   SwitchButton
 } from '@element-plus/icons-vue'
 import { referenceImages } from '@/data/mock'
+import { useIdleTimeout } from '@/composables/useIdleTimeout'
 
 const route = useRoute()
 const router = useRouter()
+
+// 启用空闲超时自动登出（15分钟）
+useIdleTimeout()
 
 const activeMenu = computed(() => route.path)
 
@@ -106,8 +110,32 @@ const handleLogout = () => {
     confirmButtonText: '确定',
     cancelButtonText: '取消',
     type: 'warning'
-  }).then(() => {
+  }).then(async () => {
+    // 调用后端登出接口
+    try {
+      await fetch('/api/admin/auth/logout', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${getToken()}`
+        }
+      })
+    } catch {
+      // 忽略登出接口错误
+    }
+    // 本地登出
     logout()
+    // 通知其他标签页
+    try {
+      if (typeof BroadcastChannel !== 'undefined') {
+        const channel = new BroadcastChannel('auth_sync')
+        channel.postMessage({ type: 'logout' })
+        channel.close()
+      } else {
+        localStorage.setItem('auth_logout_event', Date.now().toString())
+      }
+    } catch {
+      // 忽略广播错误
+    }
     router.push('/admin/login')
   }).catch(() => {})
 }

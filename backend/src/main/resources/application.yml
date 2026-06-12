@@ -12,7 +12,6 @@ mybatis-plus:
   mapper-locations: classpath:mapper/**/*.xml
   configuration:
     map-underscore-to-camel-case: true
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
   global-config:
     db-config:
       id-type: auto
@@ -22,9 +21,9 @@ mybatis-plus:
 
 # JWT 配置
 jwt:
-  secret: ${JWT_SECRET:course-manager-jwt-secret-key-2026-must-be-at-least-256-bits}
-  expiration: 86400000  # 24小时（毫秒）
+  secret: ${JWT_SECRET:DevOnlySecretKeyForLocalDevelopmentMustBe256BitsLongEnough}
+  expiration: 7200000  # 2小时（毫秒）
 
-logging:
-  level:
-    com.institution.coursemanager: debug
+# CORS 配置
+cors:
+  allowed-origins: ${CORS_ALLOWED_ORIGINS:http://localhost:5173}

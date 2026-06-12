@@ -96,4 +96,54 @@ class AdminAuthControllerTest extends BaseControllerTest {
                         .content(json))
                 .andExpect(status().isUnsupportedMediaType());
     }
+
+    @Test
+    @DisplayName("TC-LOGIN-09: 登出接口正常工作")
+    void TC_LOGIN_09_logoutTokenInvalid() throws Exception {
+        // 验证登出接口可以正常访问（无需认证）
+        mockMvc.perform(post("/api/admin/auth/logout"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200));
+
+        // 验证登出接口携带Token也可以访问
+        mockMvc.perform(post("/api/admin/auth/logout")
+                        .header("Authorization", "Bearer some-token"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200));
+    }
+
+    @Test
+    @DisplayName("TC-LOGIN-10: 连续5次错误密码后账号应被锁定")
+    void TC_LOGIN_10_accountLockout() throws Exception {
+        // 使用不同的用户名避免影响其他测试
+        String wrongJson = "{\"username\":\"testlock\",\"password\":\"wrongpassword\"}";
+        String correctJson = "{\"username\":\"testlock\",\"password\":\"admin123\"}";
+
+        // 先创建一个测试用户（如果不存在）
+        // 连续5次错误密码
+        for (int i = 0; i < 5; i++) {
+            mockMvc.perform(post("/api/admin/auth/login")
+                            .contentType("application/json")
+                            .content(wrongJson))
+                    .andExpect(status().isOk())
+                    .andExpect(jsonPath("$.code").value(401));
+        }
+
+        // 第6次使用密码应返回账号锁定错误
+        mockMvc.perform(post("/api/admin/auth/login")
+                        .contentType("application/json")
+                        .content(correctJson))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(401))
+                .andExpect(jsonPath("$.message").value("账号已锁定，请15分钟后再试"));
+    }
+
+    @Test
+    @DisplayName("TC-LOGIN-11: 登出接口无需认证即可访问")
+    void TC_LOGIN_11_logoutNoAuthRequired() throws Exception {
+        // 登出接口应该在拦截器排除列表中，无需Token即可访问
+        mockMvc.perform(post("/api/admin/auth/logout"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.code").value(200));
+    }
 }

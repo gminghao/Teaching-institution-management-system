@@ -4,6 +4,7 @@ import com.institution.coursemanager.dto.AdminLoginDTO;
 import com.institution.coursemanager.service.AuthService;
 import com.institution.coursemanager.vo.AdminLoginVO;
 import com.institution.coursemanager.vo.Result;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,5 +28,15 @@ public class AdminAuthController {
     @PostMapping("/login")
     public Result<AdminLoginVO> login(@Valid @RequestBody AdminLoginDTO dto) {
         return Result.success(authService.login(dto));
+    }
+
+    /**
+     * 管理员登出
+     */
+    @PostMapping("/logout")
+    public Result<Void> logout(HttpServletRequest request) {
+        String token = request.getHeader("Authorization");
+        authService.logout(token);
+        return Result.success();
     }
 }

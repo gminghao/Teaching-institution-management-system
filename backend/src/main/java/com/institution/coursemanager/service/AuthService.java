@@ -10,4 +10,6 @@ public interface AuthService extends IService<AdminUser> {
     AdminLoginVO login(AdminLoginDTO dto);
 
     String validateToken(String token);
+
+    void logout(String token);
 }

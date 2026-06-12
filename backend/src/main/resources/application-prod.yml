@@ -1,0 +1,8 @@
+# 生产环境配置
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.nologging.NoLoggingImpl
+
+logging:
+  level:
+    com.institution.coursemanager: info

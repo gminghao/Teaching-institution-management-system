@@ -2,11 +2,12 @@
 CREATE TABLE IF NOT EXISTS admin_user (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     username VARCHAR(50) NOT NULL,
-    password VARCHAR(200) NOT NULL,
+    password VARCHAR(255) NOT NULL,
     real_name VARCHAR(50),
     status INT DEFAULT 1,
     create_time DATETIME DEFAULT CURRENT_TIMESTAMP,
-    update_time DATETIME DEFAULT CURRENT_TIMESTAMP
+    update_time DATETIME DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uk_username UNIQUE (username)
 );
 
 CREATE TABLE IF NOT EXISTS course_category (
@@ -22,7 +23,7 @@ CREATE TABLE IF NOT EXISTS course (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
     category_id BIGINT,
     title VARCHAR(200) NOT NULL,
-    subtitle VARCHAR(500),
+    subtitle VARCHAR(300),
     cover_image VARCHAR(500),
     description TEXT,
     teacher_name VARCHAR(50),
@@ -36,7 +37,8 @@ CREATE TABLE IF NOT EXISTS course (
 
 CREATE TABLE IF NOT EXISTS enrollment_order (
     id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    order_no VARCHAR(50) NOT NULL,
+    order_no VARCHAR(32) NOT NULL,
+    CONSTRAINT uk_order_no UNIQUE (order_no),
     course_id BIGINT NOT NULL,
     course_title VARCHAR(200),
     student_name VARCHAR(50) NOT NULL,

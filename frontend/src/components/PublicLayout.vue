@@ -12,7 +12,6 @@
         <nav class="public-nav" aria-label="公共导航">
           <router-link to="/">首页</router-link>
           <router-link to="/courses">课程列表</router-link>
-          <router-link to="/admin/login">管理后台体验</router-link>
         </nav>
 
         <el-button class="enroll-button" type="primary" @click="goEnrollment">

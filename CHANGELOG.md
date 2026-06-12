@@ -19,6 +19,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/zh-CN/1.0.0
 
 ### Added
 
+- 新增 JWT 认证机制说明文档（`docs/jwt-authentication.md`），详细说明 JWT 的原理、项目实现、安全机制和使用流程
 - 初始化 Spring Boot 3 后端工程骨架（`backend/`），包含 pom.xml、application.yml、主启动类
 - 初始化 Vue 3 前端工程骨架（`frontend/`），包含 package.json、vite.config.js、main.js、App.vue
 - 配置数据库连接和 MyBatis-Plus（分页插件、驼峰映射、逻辑删除）

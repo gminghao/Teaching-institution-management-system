@@ -1,7 +1,7 @@
 package com.institution.coursemanager.interceptor;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.institution.coursemanager.util.JwtUtil;
+import com.institution.coursemanager.service.AuthService;
 import com.institution.coursemanager.vo.Result;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,7 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 public class AdminAuthInterceptor implements HandlerInterceptor {
 
     @Autowired
-    private JwtUtil jwtUtil;
+    private AuthService authService;
 
     @Autowired
     private ObjectMapper objectMapper;
@@ -34,8 +34,8 @@ public class AdminAuthInterceptor implements HandlerInterceptor {
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             String token = authHeader.substring(7);
             try {
-                jwtUtil.validateToken(token);
-                String username = jwtUtil.parseUsername(token);
+                // 使用AuthService验证Token（包含黑名单检查）
+                String username = authService.validateToken(token);
                 request.setAttribute("currentUsername", username);
                 return true;
             } catch (Exception e) {

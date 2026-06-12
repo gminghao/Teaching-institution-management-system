@@ -16,11 +16,11 @@
       <form @submit.prevent="handleLogin">
         <label>
           <span>用户名</span>
-          <input v-model="form.username" type="text" placeholder="admin">
+          <input v-model="form.username" type="text" placeholder="请输入用户名" autocomplete="username">
         </label>
         <label>
           <span>密码</span>
-          <input v-model="form.password" type="password" placeholder="admin123">
+          <input v-model="form.password" type="password" placeholder="请输入密码" autocomplete="new-password">
         </label>
         <button type="submit" :disabled="submitting">{{ submitting ? '登录中...' : '登录' }}</button>
         <p v-if="errorMessage" class="login-error">{{ errorMessage }}</p>
@@ -40,8 +40,8 @@ const route = useRoute()
 const router = useRouter()
 
 const form = reactive({
-  username: 'admin',
-  password: 'admin123'
+  username: '',
+  password: ''
 })
 const submitting = ref(false)
 const errorMessage = ref('')
@@ -54,7 +54,11 @@ const handleLogin = async () => {
     const admin = res.data
     setToken(admin.token)
     setUser({ username: admin.username, realName: admin.realName })
-    const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/admin/dashboard'
+    // 安全校验redirect参数，防止开放重定向漏洞
+    let redirect = '/admin/dashboard'
+    if (typeof route.query.redirect === 'string' && route.query.redirect.startsWith('/admin')) {
+      redirect = route.query.redirect
+    }
     router.push(redirect)
   } catch (error) {
     errorMessage.value = error.message || '登录失败'
