@@ -41,8 +41,8 @@
               <td class="muted-cell">{{ item.courseTitle }}</td>
               <td class="muted-cell">{{ item.date }}</td>
               <td>
-                <span :class="['status-pill', statusTone(item.enrollmentStatus)]">
-                  {{ item.enrollmentStatus }}
+                <span :class="['status-pill', enrollmentStatusTone(item.enrollmentStatus)]">
+                  {{ enrollmentStatusMap[item.enrollmentStatus] || item.enrollmentStatus }}
                 </span>
               </td>
             </tr>
@@ -54,24 +54,43 @@
 </template>
 
 <script setup>
+import { computed, onMounted, ref } from 'vue'
 import { Collection, DataAnalysis, Money, Reading, Timer, User } from '@element-plus/icons-vue'
-import { mockEnrollments } from '@/data/mock'
+import { getDashboardOverview } from '@/api/admin'
+import { enrollmentStatusMap, enrollmentStatusTone } from '@/utils/format'
 
-const metrics = [
-  { icon: Reading, label: '课程总数', value: '142', trend: '+4% this term', tone: 'success' },
-  { icon: Collection, label: '已上架课程', value: '86', trend: '60% of total', tone: 'info' },
-  { icon: User, label: '报名总数', value: '3.2k', trend: '+12% yoy', tone: 'success' },
-  { icon: Timer, label: '待处理事项', value: '24', trend: 'Requires attention', tone: 'warning' },
-  { icon: Money, label: '营收（本学期）', value: '$1.4M', trend: 'On track', tone: 'success', featured: true },
-  { icon: DataAnalysis, label: '未结余额', value: '$42k', trend: 'Review Accounts', tone: 'danger' }
-]
+const overview = ref({
+  totalCourses: 0,
+  onlineCourses: 0,
+  totalEnrollments: 0,
+  pendingEnrollments: 0,
+  paidCount: 0,
+  unpaidCount: 0,
+  partialCount: 0,
+  recentEnrollments: []
+})
 
-const statusTone = status => {
-  if (status === 'ENROLLED') return 'success'
-  if (status === 'PENDING' || status === 'CONTACTED') return 'warning'
-  if (status === 'CANCELLED') return 'danger'
-  return 'info'
-}
+const metrics = computed(() => [
+  { icon: Reading, label: '课程总数', value: String(overview.value.totalCourses), trend: '', tone: 'success' },
+  { icon: Collection, label: '已上架课程', value: String(overview.value.onlineCourses), trend: '', tone: 'info' },
+  { icon: User, label: '报名总数', value: String(overview.value.totalEnrollments), trend: '', tone: 'success' },
+  { icon: Timer, label: '待处理事项', value: String(overview.value.pendingEnrollments), trend: 'Requires attention', tone: 'warning' },
+  { icon: Money, label: '已缴费', value: String(overview.value.paidCount), trend: '', tone: 'success', featured: true },
+  { icon: DataAnalysis, label: '未缴费', value: String(overview.value.unpaidCount), trend: 'Review Accounts', tone: 'danger' }
+])
+
+const mockEnrollments = computed(() => overview.value.recentEnrollments || [])
+
+onMounted(async () => {
+  try {
+    const res = await getDashboardOverview()
+    if (res.code === 200) {
+      overview.value = res.data
+    }
+  } catch (e) {
+    console.error('Failed to load dashboard:', e)
+  }
+})
 </script>
 
 <style scoped>
@@ -283,6 +302,11 @@ td {
 .status-pill.danger {
   color: #b91c1c;
   background: rgba(239, 68, 68, 0.14);
+}
+
+.status-pill.info {
+  color: #475569;
+  background: rgba(100, 116, 139, 0.16);
 }
 
 @media (max-width: 1280px) {

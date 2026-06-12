@@ -71,16 +71,21 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import { ArrowRight, Clock } from '@element-plus/icons-vue'
-import { mockCourses } from '@/data/mock'
+import { getCourseDetail } from '@/api/public'
+import { toDisplayCourse } from '@/utils/coursePresenter'
 
 const route = useRoute()
+const course = ref(toDisplayCourse({ id: route.params.id }))
 
-const course = computed(() => {
-  return mockCourses.find(item => item.id === route.params.id) || mockCourses[0]
-})
+const loadCourse = async () => {
+  const res = await getCourseDetail(route.params.id)
+  course.value = toDisplayCourse(res.data)
+}
+
+onMounted(loadCourse)
 </script>
 
 <style scoped>

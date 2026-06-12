@@ -42,26 +42,28 @@
           </tr>
         </thead>
         <tbody>
-          <tr v-for="(course, index) in mockCourses" :key="course.id">
+          <tr v-for="course in courses" :key="course.id">
             <td>
               <div class="course-cell">
-                <img :src="course.image" :alt="course.title">
                 <div>
                   <strong>{{ course.title }}</strong>
                   <small>{{ course.description }}</small>
                 </div>
               </div>
             </td>
-            <td>{{ course.category }}</td>
-            <td>{{ course.instructor.name }}</td>
+            <td>{{ course.categoryName }}</td>
+            <td>{{ course.instructor }}</td>
             <td>{{ course.duration }}</td>
-            <td class="right strong">{{ course.price }}</td>
+            <td class="right strong">¥{{ course.price }}</td>
             <td>
-              <span :class="['status-pill', index % 3 === 1 ? 'warning' : 'success']">
-                {{ index % 3 === 1 ? '草稿' : '已上架' }}
+              <span :class="['status-pill', courseStatusTone(course.status)]">
+                {{ courseStatusMap[course.status] || course.status }}
               </span>
             </td>
-            <td class="right action-cell">编辑 · {{ index % 3 === 1 ? '上架' : '下架' }}</td>
+            <td class="right action-cell">
+              <span v-if="course.status === 'DRAFT'" @click="handleOnline(course.id)">上架</span>
+              <span v-else-if="course.status === 'ONLINE'" @click="handleOffline(course.id)">下架</span>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -70,8 +72,67 @@
 </template>
 
 <script setup>
+import { onMounted, ref } from 'vue'
 import { Plus, Search } from '@element-plus/icons-vue'
-import { courseCategories, mockCourses } from '@/data/mock'
+import { ElMessage } from 'element-plus'
+import { getAdminCourses, onlineCourse, offlineCourse } from '@/api/admin'
+import { courseStatusMap, courseStatusTone } from '@/utils/format'
+
+const courses = ref([])
+const loading = ref(false)
+const currentPage = ref(1)
+const total = ref(0)
+const searchKeyword = ref('')
+const filterCategory = ref('')
+const filterStatus = ref('')
+const courseCategories = ref(['全部分类'])
+
+const loadCourses = async () => {
+  loading.value = true
+  try {
+    const res = await getAdminCourses({
+      pageNum: currentPage.value,
+      pageSize: 10,
+      keyword: searchKeyword.value || undefined,
+      categoryId: filterCategory.value || undefined,
+      status: filterStatus.value || undefined
+    })
+    if (res.code === 200) {
+      courses.value = res.data.list || []
+      total.value = res.data.total || 0
+    }
+  } catch (e) {
+    console.error('Failed to load courses:', e)
+  } finally {
+    loading.value = false
+  }
+}
+
+const handleOnline = async (id) => {
+  try {
+    const res = await onlineCourse(id)
+    if (res.code === 200) {
+      ElMessage.success('上架成功')
+      loadCourses()
+    }
+  } catch (e) {
+    ElMessage.error(e.message || '操作失败')
+  }
+}
+
+const handleOffline = async (id) => {
+  try {
+    const res = await offlineCourse(id)
+    if (res.code === 200) {
+      ElMessage.success('下架成功')
+      loadCourses()
+    }
+  } catch (e) {
+    ElMessage.error(e.message || '操作失败')
+  }
+}
+
+onMounted(loadCourses)
 </script>
 
 <style scoped>

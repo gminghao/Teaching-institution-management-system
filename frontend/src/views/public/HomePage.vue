@@ -79,9 +79,11 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { onMounted, ref } from 'vue'
 import { ArrowRight, Check, CreditCard, Promotion, Trophy, User } from '@element-plus/icons-vue'
-import { mockCourses, referenceImages } from '@/data/mock'
+import { getCourses } from '@/api/public'
+import { toDisplayCourse } from '@/utils/coursePresenter'
+import { referenceImages } from '@/data/mock'
 
 const features = [
   { icon: User, title: '专业师资', desc: '直接向行业领导者和杰出的终身教授学习。' },
@@ -90,7 +92,18 @@ const features = [
   { icon: Promotion, title: '轻松入学', desc: '简化、顺畅的申请流程，全程在线管理。' }
 ]
 
-const popularCourses = computed(() => mockCourses.filter(course => course.popular).slice(0, 3))
+const popularCourses = ref([])
+
+onMounted(async () => {
+  try {
+    const res = await getCourses({ pageNum: 1, pageSize: 4 })
+    if (res.code === 200) {
+      popularCourses.value = (res.data.list || []).map(toDisplayCourse)
+    }
+  } catch (e) {
+    console.error('Failed to load courses:', e)
+  }
+})
 </script>
 
 <style scoped>

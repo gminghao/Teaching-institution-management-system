@@ -37,9 +37,14 @@
           <textarea v-model="form.remark" rows="4" placeholder="希望周末班或其他报名说明" />
         </label>
 
-        <button type="submit">提交报名</button>
-        <p v-if="submitted" class="submit-result">
-          报名请求已记录，模拟订单号 EN-202606-001。后续可在管理后台查看报名与缴费状态。
+        <button type="submit" :disabled="submitting">
+          {{ submitting ? '提交中...' : '提交报名' }}
+        </button>
+        <p v-if="submitMessage" class="submit-result">
+          {{ submitMessage }}
+        </p>
+        <p v-if="submitError" class="submit-result error">
+          {{ submitError }}
         </p>
       </form>
     </section>
@@ -47,12 +52,16 @@
 </template>
 
 <script setup>
-import { reactive, ref, computed } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import { useRoute } from 'vue-router'
-import { mockCourses } from '@/data/mock'
+import { getCourseDetail, submitEnrollment } from '@/api/public'
+import { toDisplayCourse } from '@/utils/coursePresenter'
 
 const route = useRoute()
-const submitted = ref(false)
+const course = ref(toDisplayCourse({ id: route.params.courseId }))
+const submitting = ref(false)
+const submitMessage = ref('')
+const submitError = ref('')
 
 const form = reactive({
   studentName: '',
@@ -61,13 +70,33 @@ const form = reactive({
   remark: ''
 })
 
-const course = computed(() => {
-  return mockCourses.find(item => item.id === route.params.courseId) || mockCourses[0]
-})
-
-const handleSubmit = () => {
-  submitted.value = true
+const loadCourse = async () => {
+  const res = await getCourseDetail(route.params.courseId)
+  course.value = toDisplayCourse(res.data)
 }
+
+const handleSubmit = async () => {
+  submitting.value = true
+  submitMessage.value = ''
+  submitError.value = ''
+  try {
+    const res = await submitEnrollment({
+      courseId: Number(route.params.courseId),
+      studentName: form.studentName,
+      studentPhone: form.studentPhone,
+      studentEmail: form.studentEmail,
+      remark: form.remark
+    })
+    const order = res.data
+    submitMessage.value = `${order.message}，订单号 ${order.orderNo}，报名费 ${order.registrationFee} 元。`
+  } catch (error) {
+    submitError.value = error.message || '报名提交失败'
+  } finally {
+    submitting.value = false
+  }
+}
+
+onMounted(loadCourse)
 </script>
 
 <style scoped>
@@ -202,6 +231,11 @@ button {
   font-weight: 800;
 }
 
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
 .submit-result {
   margin: 0;
   padding: 14px 16px;
@@ -209,6 +243,11 @@ button {
   background: rgba(16, 185, 129, 0.12);
   border-radius: var(--radius-control);
   line-height: 1.6;
+}
+
+.submit-result.error {
+  color: #b91c1c;
+  background: rgba(239, 68, 68, 0.12);
 }
 
 @media (max-width: 900px) {

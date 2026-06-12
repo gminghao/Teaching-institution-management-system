@@ -76,7 +76,7 @@
         </tbody>
       </table>
       <footer>
-        <span>显示 1 到 3 条，共 142 条结果</span>
+        <span>显示 1 到 {{ rows.length }} 条，共 {{ rows.length }} 条结果</span>
         <nav>
           <button type="button" disabled>&lt;</button>
           <button type="button" class="active">1</button>
@@ -91,27 +91,58 @@
 </template>
 
 <script setup>
+import { onMounted, ref } from 'vue'
 import { Document, Filter, Plus, User } from '@element-plus/icons-vue'
-import { mockEnrollments } from '@/data/mock'
-import { enrollmentStatusMap, paymentStatusMap, formatMoney } from '@/utils/format'
+import { getEnrollments } from '@/api/admin'
+import {
+  enrollmentStatusMap,
+  enrollmentStatusTone,
+  formatMoney,
+  paymentStatusMap,
+  paymentStatusTone
+} from '@/utils/format'
 
-const statusTone = (status) => {
-  if (status === 'ENROLLED' || status === 'PAID') return 'success'
-  if (status === 'CONTACTED' || status === 'PARTIAL') return 'warning'
-  if (status === 'PENDING' || status === 'UNPAID') return 'info'
-  if (status === 'CANCELLED' || status === 'REFUNDED') return 'danger'
-  return 'info'
+const enrollments = ref([])
+const loading = ref(false)
+const currentPage = ref(1)
+const total = ref(0)
+const searchKeyword = ref('')
+const filterEnrollmentStatus = ref('')
+const filterPaymentStatus = ref('')
+
+const rows = ref([])
+
+const loadEnrollments = async () => {
+  loading.value = true
+  try {
+    const res = await getEnrollments({
+      pageNum: currentPage.value,
+      pageSize: 10,
+      keyword: searchKeyword.value || undefined,
+      enrollmentStatus: filterEnrollmentStatus.value || undefined,
+      paymentStatus: filterPaymentStatus.value || undefined
+    })
+    if (res.code === 200) {
+      enrollments.value = res.data.list || []
+      total.value = res.data.total || 0
+      rows.value = enrollments.value.map(e => ({
+        ...e,
+        amountText: `¥${formatMoney(e.registrationFee)}`,
+        paidText: `¥${formatMoney(e.paidAmount)}`,
+        paymentStatusText: paymentStatusMap[e.paymentStatus] || e.paymentStatus,
+        paymentTone: paymentStatusTone(e.paymentStatus),
+        enrollmentStatusText: enrollmentStatusMap[e.enrollmentStatus] || e.enrollmentStatus,
+        enrollmentTone: enrollmentStatusTone(e.enrollmentStatus)
+      }))
+    }
+  } catch (e) {
+    console.error('Failed to load enrollments:', e)
+  } finally {
+    loading.value = false
+  }
 }
 
-const rows = mockEnrollments.map(e => ({
-  ...e,
-  amountText: `¥${formatMoney(e.registrationFee)}`,
-  paidText: `¥${formatMoney(e.paidAmount)}`,
-  paymentStatusText: paymentStatusMap[e.paymentStatus] || e.paymentStatus,
-  paymentTone: statusTone(e.paymentStatus),
-  enrollmentStatusText: enrollmentStatusMap[e.enrollmentStatus] || e.enrollmentStatus,
-  enrollmentTone: statusTone(e.enrollmentStatus)
-}))
+onMounted(loadEnrollments)
 </script>
 
 <style scoped>

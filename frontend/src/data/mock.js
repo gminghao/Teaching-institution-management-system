@@ -120,11 +120,11 @@ export const mockTransactions = [
 ]
 
 export const mockEnrollments = [
-  { orderNo: 'EN20260601001', studentName: '张伟', courseTitle: '高级算法与数据结构', date: '2026-06-01', enrollmentStatus: 'ENROLLED', paymentStatus: 'PAID', registrationFee: 800.00, paidAmount: 800.00 },
-  { orderNo: 'EN20260601002', studentName: '李娜', courseTitle: '战略公司财务', date: '2026-06-01', enrollmentStatus: 'CONTACTED', paymentStatus: 'PARTIAL', registrationFee: 680.00, paidAmount: 300.00 },
-  { orderNo: 'EN20260531001', studentName: '王强', courseTitle: '预测建模与机器学习', date: '2026-05-31', enrollmentStatus: 'ENROLLED', paymentStatus: 'PAID', registrationFee: 1000.00, paidAmount: 1000.00 },
-  { orderNo: 'EN20260531002', studentName: '赵雪', courseTitle: '现代哲学论述', date: '2026-05-31', enrollmentStatus: 'PENDING', paymentStatus: 'UNPAID', registrationFee: 560.00, paidAmount: 0.00 },
-  { orderNo: 'EN20260530001', studentName: '陈明', courseTitle: '医疗系统管理', date: '2026-05-30', enrollmentStatus: 'CANCELLED', paymentStatus: 'UNPAID', registrationFee: 780.00, paidAmount: 0.00 }
+  { orderNo: 'EN20260601001', studentName: '张伟', email: 'zhang.wei@example.com', courseTitle: '高级算法与数据结构', code: 'CS-101 · 2026春', date: '2026-06-01', enrollmentStatus: 'ENROLLED', paymentStatus: 'PAID', registrationFee: 800.00, paidAmount: 800.00 },
+  { orderNo: 'EN20260601002', studentName: '李娜', email: 'li.na@example.com', courseTitle: '战略公司财务', code: 'BUS-201 · 2026春', date: '2026-06-01', enrollmentStatus: 'CONTACTED', paymentStatus: 'PARTIAL', registrationFee: 680.00, paidAmount: 300.00 },
+  { orderNo: 'EN20260531001', studentName: '王强', email: 'wang.qiang@example.com', courseTitle: '预测建模与机器学习', code: 'DATA-301 · 2026春', date: '2026-05-31', enrollmentStatus: 'ENROLLED', paymentStatus: 'PAID', registrationFee: 1000.00, paidAmount: 1000.00 },
+  { orderNo: 'EN20260531002', studentName: '赵雪', email: 'zhao.xue@example.com', courseTitle: '现代哲学论述', code: 'HUM-401 · 2026春', date: '2026-05-31', enrollmentStatus: 'PENDING', paymentStatus: 'UNPAID', registrationFee: 560.00, paidAmount: 0.00 },
+  { orderNo: 'EN20260530001', studentName: '陈明', email: 'chen.ming@example.com', courseTitle: '医疗系统管理', code: 'MED-501 · 2026春', date: '2026-05-30', enrollmentStatus: 'CANCELLED', paymentStatus: 'UNPAID', registrationFee: 780.00, paidAmount: 0.00 }
 ]
 
 export const courseCategories = ['全部课程', '计算机科学', '工商管理', '人文艺术', '数据分析', '医疗管理', '设计']

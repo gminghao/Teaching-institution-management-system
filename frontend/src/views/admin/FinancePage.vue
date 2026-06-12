@@ -54,15 +54,15 @@
           <a href="#">查看全部</a>
         </header>
         <div class="payment-list">
-          <div v-for="tx in mockTransactions.slice(0, 3)" :key="tx.id" class="payment-item">
-            <span class="payer-avatar">{{ tx.name[0] }}</span>
+          <div v-for="tx in transactions.slice(0, 3)" :key="tx.id" class="payment-item">
+            <span class="payer-avatar">{{ (tx.studentName || '')[0] }}</span>
             <div class="payer-main">
-              <strong>{{ tx.name }}</strong>
-              <small>{{ tx.method }}</small>
+              <strong>{{ tx.studentName }}</strong>
+              <small>{{ tx.courseTitle }}</small>
             </div>
             <div class="payment-result">
-              <strong>+{{ tx.amount }}</strong>
-              <small :class="tx.status">{{ statusText(tx.status) }}</small>
+              <strong>+¥{{ formatMoney(tx.paidAmount) }}</strong>
+              <small :class="tx.paymentStatus">{{ statusText(tx.paymentStatus) }}</small>
             </div>
           </div>
         </div>
@@ -91,16 +91,16 @@
             </tr>
           </thead>
           <tbody>
-            <tr v-for="tx in mockTransactions" :key="tx.id">
-              <td>{{ tx.date }}</td>
-              <td class="order-id">{{ tx.id }}</td>
-              <td>{{ tx.name }}</td>
-              <td class="right strong">{{ tx.amount }}</td>
-              <td class="muted">{{ tx.method }}</td>
+            <tr v-for="tx in transactions" :key="tx.id">
+              <td>{{ tx.createTime }}</td>
+              <td class="order-id">{{ tx.orderNo }}</td>
+              <td>{{ tx.studentName }}</td>
+              <td class="right strong">¥{{ formatMoney(tx.registrationFee) }}</td>
+              <td class="muted">{{ tx.paymentMethod }}</td>
               <td>
-                <span :class="['tx-status', tx.status]">{{ statusText(tx.status, true) }}</span>
+                <span :class="['tx-status', tx.paymentStatus]">{{ statusText(tx.paymentStatus) }}</span>
               </td>
-              <td class="muted">{{ tx.operator }}</td>
+              <td class="muted">{{ tx.adminUsername }}</td>
             </tr>
           </tbody>
         </table>
@@ -121,30 +121,66 @@
 </template>
 
 <script setup>
+import { computed, onMounted, ref } from 'vue'
 import { Download, Money, Plus, Search, TrendCharts, UserFilled, Wallet } from '@element-plus/icons-vue'
-import { mockTransactions } from '@/data/mock'
+import { getFinanceSummary, getEnrollments } from '@/api/admin'
+import { formatMoney } from '@/utils/format'
 
-const stats = [
-  { icon: Wallet, label: '总营收 (Total Revenue)', value: '¥1,245,000', note: '+12.5% 较上月', tone: 'success' },
-  { icon: UserFilled, label: '报名费 (Registration Fees)', value: '¥850,000', note: '+5.2% 较上月', tone: 'success' },
-  { icon: Money, label: '已缴金额 (Paid Amount)', value: '¥1,100,000', note: '88% 收款率', tone: 'default' },
-  { icon: TrendCharts, label: '待缴余额 (Outstanding)', value: '¥145,000', note: '125 名学员未缴清', tone: 'warning' }
-]
+const summary = ref({
+  totalPaidAmount: 0,
+  totalRegistrationFee: 0,
+  paidCount: 0,
+  unpaidCount: 0,
+  partialCount: 0
+})
 
-const bars = [
-  { month: '9月', height: '40%' },
-  { month: '10月', height: '60%' },
-  { month: '11月', height: '85%' },
-  { month: '12月', height: '100%' }
-]
+const transactions = ref([])
+const loading = ref(false)
 
-const statusText = (status, formal = false) => {
-  if (status === 'PAID') return formal ? '已缴费' : '已缴费'
+const stats = computed(() => [
+  { icon: Money, label: '已缴金额 (Paid Amount)', value: `¥${formatMoney(summary.value.totalPaidAmount)}`, note: '', tone: 'success' },
+  { icon: Wallet, label: '报名费总额 (Total Fees)', value: `¥${formatMoney(summary.value.totalRegistrationFee)}`, note: '', tone: 'default' },
+  { icon: UserFilled, label: '已缴费人数 (Paid Count)', value: String(summary.value.paidCount), note: '', tone: 'success' },
+  { icon: TrendCharts, label: '未缴人数 (Unpaid)', value: String(summary.value.unpaidCount), note: '', tone: 'warning' }
+])
+
+const loadSummary = async () => {
+  try {
+    const res = await getFinanceSummary()
+    if (res.code === 200) {
+      summary.value = res.data
+    }
+  } catch (e) {
+    console.error('Failed to load finance summary:', e)
+  }
+}
+
+const loadRecords = async () => {
+  loading.value = true
+  try {
+    const res = await getEnrollments({ pageNum: 1, pageSize: 10 })
+    if (res.code === 200) {
+      transactions.value = res.data.list || []
+    }
+  } catch (e) {
+    console.error('Failed to load records:', e)
+  } finally {
+    loading.value = false
+  }
+}
+
+const statusText = (status) => {
+  if (status === 'PAID') return '已缴费'
   if (status === 'PARTIAL') return '部分缴费'
   if (status === 'UNPAID') return '未缴费'
   if (status === 'REFUNDED') return '已退款'
   return status || '未知'
 }
+
+onMounted(() => {
+  loadSummary()
+  loadRecords()
+})
 </script>
 
 <style scoped>

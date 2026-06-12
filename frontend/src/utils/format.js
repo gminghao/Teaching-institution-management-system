@@ -45,6 +45,21 @@ export const paymentStatusMap = {
   REFUNDED: '已退款'
 }
 
+export function enrollmentStatusTone(status) {
+  if (status === 'ENROLLED') return 'success'
+  if (status === 'PENDING' || status === 'CONTACTED') return 'warning'
+  if (status === 'CANCELLED') return 'danger'
+  return 'info'
+}
+
+export function paymentStatusTone(status) {
+  if (status === 'PAID') return 'success'
+  if (status === 'PARTIAL') return 'warning'
+  if (status === 'UNPAID') return 'danger'
+  if (status === 'REFUNDED') return 'info'
+  return 'info'
+}
+
 /**
  * 课程状态文本映射
  */
@@ -52,4 +67,11 @@ export const courseStatusMap = {
   DRAFT: '草稿',
   ONLINE: '已上架',
   OFFLINE: '已下架'
+}
+
+export function courseStatusTone(status) {
+  if (status === 'ONLINE') return 'success'
+  if (status === 'DRAFT') return 'warning'
+  if (status === 'OFFLINE') return 'danger'
+  return 'info'
 }

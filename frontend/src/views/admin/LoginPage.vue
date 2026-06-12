@@ -22,16 +22,18 @@
           <span>密码</span>
           <input v-model="form.password" type="password" placeholder="admin123">
         </label>
-        <button type="submit">登录</button>
+        <button type="submit" :disabled="submitting">{{ submitting ? '登录中...' : '登录' }}</button>
+        <p v-if="errorMessage" class="login-error">{{ errorMessage }}</p>
       </form>
     </section>
   </div>
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { Reading } from '@element-plus/icons-vue'
+import { login } from '@/api/admin'
 import { setToken, setUser } from '@/utils/auth'
 
 const route = useRoute()
@@ -41,12 +43,24 @@ const form = reactive({
   username: 'admin',
   password: 'admin123'
 })
+const submitting = ref(false)
+const errorMessage = ref('')
 
-const handleLogin = () => {
-  setToken('mock-admin-token')
-  setUser({ username: form.username, realName: '陈管理员' })
-  const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/admin/dashboard'
-  router.push(redirect)
+const handleLogin = async () => {
+  submitting.value = true
+  errorMessage.value = ''
+  try {
+    const res = await login(form)
+    const admin = res.data
+    setToken(admin.token)
+    setUser({ username: admin.username, realName: admin.realName })
+    const redirect = typeof route.query.redirect === 'string' ? route.query.redirect : '/admin/dashboard'
+    router.push(redirect)
+  } catch (error) {
+    errorMessage.value = error.message || '登录失败'
+  } finally {
+    submitting.value = false
+  }
 }
 </script>
 
@@ -153,6 +167,17 @@ button {
   border-radius: var(--radius-control);
   cursor: pointer;
   font-weight: 800;
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.7;
+}
+
+.login-error {
+  margin: 0;
+  color: var(--color-danger);
+  font-weight: 700;
 }
 
 @media (max-width: 820px) {

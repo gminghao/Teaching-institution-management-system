@@ -36,10 +36,14 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
     private static final int DEFAULT_PAGE_SIZE = 10;
     private static final int NOT_DELETED = 0;
 
+    private final CourseMapper courseMapper;
     private final CourseCategoryMapper courseCategoryMapper;
     private final EnrollmentOrderMapper enrollmentOrderMapper;
 
-    public CourseServiceImpl(CourseCategoryMapper courseCategoryMapper, EnrollmentOrderMapper enrollmentOrderMapper) {
+    public CourseServiceImpl(CourseMapper courseMapper,
+                             CourseCategoryMapper courseCategoryMapper,
+                             EnrollmentOrderMapper enrollmentOrderMapper) {
+        this.courseMapper = courseMapper;
         this.courseCategoryMapper = courseCategoryMapper;
         this.enrollmentOrderMapper = enrollmentOrderMapper;
     }
@@ -176,28 +180,22 @@ public class CourseServiceImpl extends ServiceImpl<CourseMapper, Course> impleme
 
     @Override
     public PageResult<AdminCourseVO> getAdminCoursePage(Integer pageNum, Integer pageSize, String keyword, String status) {
-        LambdaQueryWrapper<Course> wrapper = new LambdaQueryWrapper<Course>()
-                .like(StringUtils.hasText(keyword), Course::getTitle, keyword)
-                .eq(StringUtils.hasText(status), Course::getStatus, status)
-                .orderByDesc(Course::getCreateTime);
-        Page<Course> page = page(new Page<>(normalizePageNum(pageNum), normalizePageSize(pageSize)), wrapper);
-        List<AdminCourseVO> records = page.getRecords().stream()
-                .map(this::toAdminCourseVO)
-                .toList();
+        Page<AdminCourseVO> page = courseMapper.selectAdminPage(
+                new Page<>(normalizePageNum(pageNum), normalizePageSize(pageSize)),
+                null,
+                keyword,
+                status);
+        List<AdminCourseVO> records = page.getRecords();
         return PageResult.of(page.getTotal(), (int) page.getCurrent(), (int) page.getSize(), records);
     }
 
     @Override
     public PageResult<PublicCourseVO> getPublicCoursePage(Integer pageNum, Integer pageSize, Long categoryId, String keyword) {
-        LambdaQueryWrapper<Course> wrapper = new LambdaQueryWrapper<Course>()
-                .eq(Course::getStatus, CourseStatus.ONLINE.getCode())
-                .eq(categoryId != null, Course::getCategoryId, categoryId)
-                .like(StringUtils.hasText(keyword), Course::getTitle, keyword)
-                .orderByDesc(Course::getCreateTime);
-        Page<Course> page = page(new Page<>(normalizePageNum(pageNum), normalizePageSize(pageSize)), wrapper);
-        List<PublicCourseVO> records = page.getRecords().stream()
-                .map(this::toPublicCourseVO)
-                .toList();
+        Page<PublicCourseVO> page = courseMapper.selectPublicPage(
+                new Page<>(normalizePageNum(pageNum), normalizePageSize(pageSize)),
+                categoryId,
+                keyword);
+        List<PublicCourseVO> records = page.getRecords();
         return PageResult.of(page.getTotal(), (int) page.getCurrent(), (int) page.getSize(), records);
     }
 

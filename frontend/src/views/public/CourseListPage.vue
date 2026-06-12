@@ -24,7 +24,11 @@
       </div>
     </section>
 
-    <section class="course-grid">
+    <p v-if="loading" class="state-text">课程加载中...</p>
+    <p v-else-if="errorMessage" class="state-text error">{{ errorMessage }}</p>
+    <p v-else-if="filteredCourses.length === 0" class="state-text">暂无匹配课程</p>
+
+    <section v-else class="course-grid">
       <article v-for="course in filteredCourses" :key="course.id" class="course-card">
         <router-link :to="`/courses/${course.id}`" class="image-wrap">
           <img :src="course.image" :alt="course.title">
@@ -56,30 +60,31 @@
       </article>
     </section>
 
-    <nav class="pagination" aria-label="课程分页">
+    <nav v-if="filteredCourses.length > 0" class="pagination" aria-label="课程分页">
       <button type="button" disabled>&lt;</button>
       <button type="button" class="active">1</button>
-      <button type="button">2</button>
-      <button type="button">3</button>
-      <span>...</span>
-      <button type="button">8</button>
       <button type="button">&gt;</button>
     </nav>
   </div>
 </template>
 
 <script setup>
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { Clock, Search } from '@element-plus/icons-vue'
-import { courseCategories, mockCourses } from '@/data/mock'
+import { getCourses } from '@/api/public'
+import { toDisplayCourses } from '@/utils/coursePresenter'
 
 const keyword = ref('')
 const activeCategory = ref('全部课程')
+const courses = ref([])
+const loading = ref(false)
+const errorMessage = ref('')
+const courseCategories = ref(['全部课程'])
 
 const filteredCourses = computed(() => {
   const normalizedKeyword = keyword.value.trim().toLowerCase()
 
-  return mockCourses.filter(course => {
+  return courses.value.filter(course => {
     const categoryMatched = activeCategory.value === '全部课程' || course.category === activeCategory.value
     const keywordMatched = !normalizedKeyword ||
       course.title.toLowerCase().includes(normalizedKeyword) ||
@@ -89,6 +94,21 @@ const filteredCourses = computed(() => {
     return categoryMatched && keywordMatched
   })
 })
+
+const loadCourses = async () => {
+  loading.value = true
+  errorMessage.value = ''
+  try {
+    const res = await getCourses({ pageNum: 1, pageSize: 100 })
+    courses.value = toDisplayCourses(res.data?.list || [])
+  } catch (error) {
+    errorMessage.value = error.message || '课程加载失败'
+  } finally {
+    loading.value = false
+  }
+}
+
+onMounted(loadCourses)
 </script>
 
 <style scoped>
@@ -195,6 +215,16 @@ const filteredCourses = computed(() => {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 32px;
+}
+
+.state-text {
+  margin: 48px 0 64px;
+  color: var(--color-text-muted);
+  font-weight: 700;
+}
+
+.state-text.error {
+  color: var(--color-danger);
 }
 
 .course-card {

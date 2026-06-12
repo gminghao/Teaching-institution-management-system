@@ -1,8 +1,9 @@
 # HANDOFF.md
 
-> Project handoff report — generated 2026-06-11
+> Project handoff report — generated 2026-06-12
+> Updated: 2026-06-12
 > Current branch: `dev` | Base branch: `main`
-> Progress: 58/78 tasks (74.4%)
+> Progress: 74/78 tasks (94.9%)
 
 ---
 
@@ -93,6 +94,8 @@
 
 ## 2. Modified files and their key changes (include path)
 
+### Backend — Entity
+
 * Path: `backend/src/main/java/com/institution/coursemanager/entity/AdminUser.java`
 * Change type: ADD
 * Key change: Admin user entity with BCrypt password field.
@@ -111,6 +114,15 @@
 * Rollback method: Delete file.
 * Pitfall: UNKNOWN.
 
+* Path: `backend/src/main/java/com/institution/coursemanager/entity/CourseCategory.java`
+* Change type: ADD
+* Key change: Course category entity.
+* Core logic: Maps to `course_category` table.
+* Dependency impact: Used by CourseService.
+* Risk point: None.
+* Rollback method: Delete file.
+* Pitfall: UNKNOWN.
+
 * Path: `backend/src/main/java/com/institution/coursemanager/entity/EnrollmentOrder.java`
 * Change type: ADD
 * Key change: Enrollment order entity with status fields.
@@ -120,10 +132,21 @@
 * Rollback method: Delete file.
 * Pitfall: UNKNOWN.
 
+* Path: `backend/src/main/java/com/institution/coursemanager/entity/PaymentRecord.java`
+* Change type: ADD
+* Key change: Payment record entity.
+* Core logic: Stores payment transactions.
+* Dependency impact: Used by PaymentService.
+* Risk point: None.
+* Rollback method: Delete file.
+* Pitfall: UNKNOWN.
+
+### Backend — Service
+
 * Path: `backend/src/main/java/com/institution/coursemanager/service/impl/CourseServiceImpl.java`
 * Change type: ADD
 * Key change: Course CRUD + online/offline + pagination with page size limit (100).
-* Core logic: Status validation, logical delete check.
+* Core logic: Status validation, logical delete check, categoryId validation.
 * Dependency impact: Uses CourseMapper, CourseCategoryMapper.
 * Risk point: N+1 query on category name.
 * Rollback method: Delete file.
@@ -156,6 +179,26 @@
 * Rollback method: Delete file.
 * Pitfall: UNKNOWN.
 
+* Path: `backend/src/main/java/com/institution/coursemanager/service/impl/DashboardServiceImpl.java`
+* Change type: ADD
+* Key change: Dashboard overview aggregation.
+* Core logic: Counts and statistics for admin dashboard.
+* Dependency impact: Uses EnrollmentOrderMapper, CourseMapper.
+* Risk point: None.
+* Rollback method: Delete file.
+* Pitfall: UNKNOWN.
+
+* Path: `backend/src/main/java/com/institution/coursemanager/service/impl/AuthServiceImpl.java`
+* Change type: ADD
+* Key change: Admin login with BCrypt password verification.
+* Core logic: JWT token generation.
+* Dependency impact: Uses AdminUserMapper, JwtUtil.
+* Risk point: None.
+* Rollback method: Delete file.
+* Pitfall: UNKNOWN.
+
+### Backend — Mapper
+
 * Path: `backend/src/main/java/com/institution/coursemanager/mapper/EnrollmentOrderMapper.java`
 * Change type: ADD
 * Key change: Added `selectFinanceSummary()` aggregation query.
@@ -165,11 +208,40 @@
 * Rollback method: Revert to original.
 * Pitfall: UNKNOWN.
 
+* Path: `backend/src/main/java/com/institution/coursemanager/mapper/CourseMapper.java`
+* Change type: ADD
+* Key change: Course mapper with XML-based queries.
+* Core logic: Supports dynamic conditions for public/admin queries.
+* Dependency impact: Used by CourseServiceImpl.
+* Risk point: None.
+* Rollback method: Delete file.
+* Pitfall: UNKNOWN.
+
 * Path: `backend/src/main/resources/mapper/CourseMapper.xml`
 * Change type: ADD
 * Key change: JOIN query for course + category.
 * Core logic: `selectPublicPage` and `selectAdminPage` with dynamic conditions.
 * Dependency impact: Used by CourseMapper interface.
+* Risk point: None.
+* Rollback method: Delete file.
+* Pitfall: UNKNOWN.
+
+### Backend — Controller
+
+* Path: `backend/src/main/java/com/institution/coursemanager/controller/admin/AdminAuthController.java`
+* Change type: ADD
+* Key change: Admin login endpoint.
+* Core logic: POST /api/admin/login.
+* Dependency impact: Uses AuthService.
+* Risk point: None.
+* Rollback method: Delete file.
+* Pitfall: UNKNOWN.
+
+* Path: `backend/src/main/java/com/institution/coursemanager/controller/admin/AdminCourseController.java`
+* Change type: ADD
+* Key change: Admin course CRUD endpoints.
+* Core logic: GET/POST/PUT/DELETE /api/admin/courses.
+* Dependency impact: Uses CourseService.
 * Risk point: None.
 * Rollback method: Delete file.
 * Pitfall: UNKNOWN.
@@ -183,6 +255,33 @@
 * Rollback method: Delete file.
 * Pitfall: UNKNOWN.
 
+* Path: `backend/src/main/java/com/institution/coursemanager/controller/admin/AdminPaymentController.java`
+* Change type: ADD
+* Key change: Payment recording endpoints.
+* Core logic: POST /api/admin/payments.
+* Dependency impact: Uses PaymentService.
+* Risk point: None.
+* Rollback method: Delete file.
+* Pitfall: UNKNOWN.
+
+* Path: `backend/src/main/java/com/institution/coursemanager/controller/admin/AdminDashboardController.java`
+* Change type: ADD
+* Key change: Dashboard overview endpoint.
+* Core logic: GET /api/admin/dashboard/overview.
+* Dependency impact: Uses DashboardService.
+* Risk point: None.
+* Rollback method: Delete file.
+* Pitfall: UNKNOWN.
+
+* Path: `backend/src/main/java/com/institution/coursemanager/controller/admin/AdminFinanceController.java`
+* Change type: ADD
+* Key change: Finance summary endpoint.
+* Core logic: GET /api/admin/finance/summary.
+* Dependency impact: Uses FinanceService.
+* Risk point: None.
+* Rollback method: Delete file.
+* Pitfall: UNKNOWN.
+
 * Path: `backend/src/main/java/com/institution/coursemanager/controller/visitor/PublicCourseController.java`
 * Change type: ADD
 * Key change: Public course list and detail endpoints.
@@ -191,6 +290,17 @@
 * Risk point: None.
 * Rollback method: Delete file.
 * Pitfall: UNKNOWN.
+
+* Path: `backend/src/main/java/com/institution/coursemanager/controller/visitor/PublicEnrollmentController.java`
+* Change type: ADD
+* Key change: Public enrollment submission endpoint.
+* Core logic: No auth required.
+* Dependency impact: Uses EnrollmentService.
+* Risk point: None.
+* Rollback method: Delete file.
+* Pitfall: UNKNOWN.
+
+### Backend — Config & Exception
 
 * Path: `backend/src/main/java/com/institution/coursemanager/exception/GlobalExceptionHandler.java`
 * Change type: ADD
@@ -219,6 +329,109 @@
 * Rollback method: Revert to original.
 * Pitfall: CORS allows all origins.
 
+* Path: `backend/src/main/resources/application.yml`
+* Change type: MODIFY
+* Key change: Environment variables for JWT secret and DB credentials.
+* Core logic: `${JWT_SECRET:...}`, `${DB_USERNAME:root}`, `${DB_PASSWORD:root}`.
+* Dependency impact: None.
+* Risk point: Default values used if env vars not set.
+* Rollback method: `git restore backend/src/main/resources/application.yml`
+* Pitfall: UNKNOWN.
+
+### Backend — Tests (Phase 9)
+
+* Path: `backend/src/test/java/com/institution/coursemanager/controller/BaseControllerTest.java`
+* Change type: ADD
+* Key change: Test base class with @BeforeEach data initialization.
+* Core logic: Seeds admin user (BCrypt) and course category before each test.
+* Dependency impact: All controller tests extend this class.
+* Risk point: None.
+* Rollback method: Delete file.
+* Pitfall: UNKNOWN.
+
+* Path: `backend/src/test/java/com/institution/coursemanager/controller/AdminAuthControllerTest.java`
+* Change type: ADD
+* Key change: 8 login test cases.
+* Core logic: TC-LOGIN-01 ~ TC-LOGIN-08.
+* Dependency impact: None.
+* Risk point: None.
+* Rollback method: Delete file.
+* Pitfall: UNKNOWN.
+
+* Path: `backend/src/test/java/com/institution/coursemanager/controller/AdminCourseControllerTest.java`
+* Change type: ADD
+* Key change: 14 course CRUD + publish/unpublish test cases.
+* Core logic: TC-COURSE-01 ~ TC-COURSE-14.
+* Dependency impact: None.
+* Risk point: None.
+* Rollback method: Delete file.
+* Pitfall: UNKNOWN.
+
+* Path: `backend/src/test/java/com/institution/coursemanager/controller/PublicCourseControllerTest.java`
+* Change type: ADD
+* Key change: 5 public course list test cases.
+* Core logic: TC-COURSE-15 ~ TC-COURSE-19.
+* Dependency impact: None.
+* Risk point: None.
+* Rollback method: Delete file.
+* Pitfall: UNKNOWN.
+
+* Path: `backend/src/test/java/com/institution/coursemanager/controller/PublicEnrollmentControllerTest.java`
+* Change type: ADD
+* Key change: 10 enrollment submission test cases.
+* Core logic: TC-ENROLL-01 ~ TC-ENROLL-10.
+* Dependency impact: None.
+* Risk point: None.
+* Rollback method: Delete file.
+* Pitfall: UNKNOWN.
+
+* Path: `backend/src/test/java/com/institution/coursemanager/controller/AdminEnrollmentControllerTest.java`
+* Change type: ADD
+* Key change: 10 enrollment status update test cases.
+* Core logic: TC-STATUS-01 ~ TC-STATUS-10.
+* Dependency impact: None.
+* Risk point: None.
+* Rollback method: Delete file.
+* Pitfall: UNKNOWN.
+
+* Path: `backend/src/test/java/com/institution/coursemanager/controller/AdminPaymentControllerTest.java`
+* Change type: ADD
+* Key change: 10 payment recording test cases.
+* Core logic: TC-PAY-01 ~ TC-PAY-10.
+* Dependency impact: None.
+* Risk point: None.
+* Rollback method: Delete file.
+* Pitfall: UNKNOWN.
+
+* Path: `backend/src/test/java/com/institution/coursemanager/controller/AdminDashboardControllerTest.java`
+* Change type: ADD
+* Key change: 5 dashboard overview test cases.
+* Core logic: TC-DASH-01 ~ TC-DASH-05.
+* Dependency impact: None.
+* Risk point: None.
+* Rollback method: Delete file.
+* Pitfall: UNKNOWN.
+
+* Path: `backend/src/test/java/com/institution/coursemanager/controller/AdminFinanceControllerTest.java`
+* Change type: ADD
+* Key change: 4 finance summary test cases.
+* Core logic: TC-FIN-01 ~ TC-FIN-04.
+* Dependency impact: None.
+* Risk point: None.
+* Rollback method: Delete file.
+* Pitfall: UNKNOWN.
+
+* Path: `backend/src/test/java/com/institution/coursemanager/service/EnrollmentServiceImplTest.java`
+* Change type: ADD
+* Key change: Service layer unit tests for enrollment.
+* Core logic: Status transition tests, edge case tests.
+* Dependency impact: None.
+* Risk point: None.
+* Rollback method: Delete file.
+* Pitfall: UNKNOWN.
+
+### Frontend — Infrastructure
+
 * Path: `frontend/src/router/index.js`
 * Change type: MODIFY
 * Key change: Added 404 catch-all route.
@@ -246,12 +459,21 @@
 * Rollback method: Revert to direct JSON.parse.
 * Pitfall: UNKNOWN.
 
-* Path: `frontend/src/views/NotFoundPage.vue`
-* Change type: ADD
-* Key change: 404 page with Element Plus `el-result`.
-* Core logic: Navigation buttons to home/back.
-* Dependency impact: Requires Element Plus.
+* Path: `frontend/src/utils/format.js`
+* Change type: MODIFY
+* Key change: Added `courseStatusTone()` function.
+* Core logic: `enrollmentStatusMap`, `paymentStatusMap`, `courseStatusMap`, `courseStatusTone()`, `formatMoney()`.
+* Dependency impact: Used by all admin pages.
 * Risk point: None.
+* Rollback method: `git restore frontend/src/utils/format.js`.
+* Pitfall: UNKNOWN.
+
+* Path: `frontend/src/data/mock.js`
+* Change type: ADD
+* Key change: Mock data with backend enum values and RMB amounts.
+* Core logic: `mockCourses`, `mockEnrollments` with `paidAmount <= registrationFee` invariant.
+* Dependency impact: Used by all frontend pages.
+* Risk point: Not connected to real API.
 * Rollback method: Delete file.
 * Pitfall: UNKNOWN.
 
@@ -264,22 +486,24 @@
 * Rollback method: Delete file.
 * Pitfall: UNKNOWN.
 
+### Frontend — Visitor Pages
+
 * Path: `frontend/src/views/public/HomePage.vue`
-* Change type: ADD
-* Key change: Home page with banner, intro, course cards.
-* Core logic: Uses mock data (not API).
-* Dependency impact: Uses PublicLayout.
-* Risk point: Mock data not real.
-* Rollback method: Delete file.
+* Change type: MODIFY
+* Key change: Home page now calls `getCourses()` API for popular courses.
+* Core logic: Real API data instead of mock.
+* Dependency impact: Uses PublicLayout, api/public.js.
+* Risk point: None.
+* Rollback method: `git restore frontend/src/views/public/HomePage.vue`.
 * Pitfall: UNKNOWN.
 
 * Path: `frontend/src/views/public/CourseListPage.vue`
-* Change type: ADD
-* Key change: Course list with search, filter, pagination.
-* Core logic: Uses mock data (not API).
-* Dependency impact: Uses PublicLayout.
-* Risk point: Mock data not real.
-* Rollback method: Delete file.
+* Change type: MODIFY
+* Key change: Course list now calls `getCourses()` API, removed mock category import.
+* Core logic: Real API data instead of mock.
+* Dependency impact: Uses PublicLayout, api/public.js.
+* Risk point: None.
+* Rollback method: `git restore frontend/src/views/public/CourseListPage.vue`.
 * Pitfall: UNKNOWN.
 
 * Path: `frontend/src/views/public/CourseDetailPage.vue`
@@ -300,6 +524,8 @@
 * Rollback method: Delete file.
 * Pitfall: UNKNOWN.
 
+### Frontend — Admin Pages
+
 * Path: `frontend/src/views/admin/LoginPage.vue`
 * Change type: ADD
 * Key change: Admin login page.
@@ -310,95 +536,48 @@
 * Pitfall: UNKNOWN.
 
 * Path: `frontend/src/views/admin/DashboardPage.vue`
-* Change type: ADD
-* Key change: Dashboard with stats cards.
-* Core logic: Uses mock data (not API).
-* Dependency impact: Uses AdminLayout.
-* Risk point: Mock data not real.
-* Rollback method: Delete file.
+* Change type: MODIFY
+* Key change: Dashboard now calls `getDashboardOverview()` API.
+* Core logic: Real API data instead of mock.
+* Dependency impact: Uses AdminLayout, format.js, api/admin.js.
+* Risk point: None.
+* Rollback method: `git restore frontend/src/views/admin/DashboardPage.vue`.
 * Pitfall: UNKNOWN.
 
 * Path: `frontend/src/views/admin/CourseManagePage.vue`
-* Change type: ADD
-* Key change: Course management with CRUD dialog.
-* Core logic: Uses mock data (not API).
-* Dependency impact: Uses AdminLayout.
-* Risk point: Mock data not real.
-* Rollback method: Delete file.
+* Change type: MODIFY
+* Key change: Course management now calls `getAdminCourses()` API.
+* Core logic: Real API data instead of mock, online/offline actions.
+* Dependency impact: Uses AdminLayout, format.js, api/admin.js.
+* Risk point: None.
+* Rollback method: `git restore frontend/src/views/admin/CourseManagePage.vue`.
 * Pitfall: UNKNOWN.
 
 * Path: `frontend/src/views/admin/EnrollmentManagePage.vue`
-* Change type: ADD
-* Key change: Enrollment list with status update.
-* Core logic: Uses mock data (not API).
-* Dependency impact: Uses AdminLayout.
-* Risk point: Mock data not real.
-* Rollback method: Delete file.
+* Change type: MODIFY
+* Key change: Enrollment list now calls `getEnrollments()` API.
+* Core logic: Real API data instead of mock.
+* Dependency impact: Uses AdminLayout, format.js, api/admin.js.
+* Risk point: None.
+* Rollback method: `git restore frontend/src/views/admin/EnrollmentManagePage.vue`.
 * Pitfall: UNKNOWN.
 
 * Path: `frontend/src/views/admin/FinancePage.vue`
+* Change type: MODIFY
+* Key change: Finance summary now calls `getFinanceSummary()` and `getEnrollments()` API.
+* Core logic: Real API data instead of mock.
+* Dependency impact: Uses AdminLayout, format.js, api/admin.js.
+* Risk point: None.
+* Rollback method: `git restore frontend/src/views/admin/FinancePage.vue`.
+* Pitfall: UNKNOWN.
+
+* Path: `frontend/src/views/NotFoundPage.vue`
 * Change type: ADD
-* Key change: Finance summary and payment records.
-* Core logic: Uses mock data (not API).
-* Dependency impact: Uses AdminLayout.
-* Risk point: Mock data not real.
+* Key change: 404 page with Element Plus `el-result`.
+* Core logic: Navigation buttons to home/back.
+* Dependency impact: Requires Element Plus.
+* Risk point: None.
 * Rollback method: Delete file.
-* Pitfall: UNKNOWN.
-
-### Phase 12: Code Review Fixes
-
-* Path: `backend/src/main/java/com/institution/coursemanager/controller/admin/AdminEnrollmentController.java`
-* Change type: MODIFY
-* Key change: Fixed parameter order (paymentStatus, enrollmentStatus).
-* Core logic: Corrected argument passing to match Service signature.
-* Dependency impact: None.
-* Risk point: None.
-* Rollback method: `git restore backend/src/main/java/com/institution/coursemanager/controller/admin/AdminEnrollmentController.java`
-* Pitfall: UNKNOWN.
-
-* Path: `backend/src/main/java/com/institution/coursemanager/service/impl/FinanceServiceImpl.java`
-* Change type: MODIFY
-* Key change: Replaced full table load with SQL aggregation.
-* Core logic: Uses `selectFinanceSummary()` instead of `list()`.
-* Dependency impact: Depends on EnrollmentOrderMapper.
-* Risk point: None.
-* Rollback method: `git restore backend/src/main/java/com/institution/coursemanager/service/impl/FinanceServiceImpl.java`
-* Pitfall: UNKNOWN.
-
-* Path: `backend/src/main/java/com/institution/coursemanager/mapper/EnrollmentOrderMapper.java`
-* Change type: MODIFY
-* Key change: Added `selectFinanceSummary()` aggregation query.
-* Core logic: SQL SUM/COUNT with CASE for status breakdown.
-* Dependency impact: Used by FinanceServiceImpl.
-* Risk point: None.
-* Rollback method: `git restore backend/src/main/java/com/institution/coursemanager/mapper/EnrollmentOrderMapper.java`
-* Pitfall: UNKNOWN.
-
-* Path: `backend/src/main/java/com/institution/coursemanager/service/impl/CourseServiceImpl.java`
-* Change type: MODIFY
-* Key change: Added page size limit (MAX_PAGE_SIZE=100) and categoryId validation.
-* Core logic: `Math.min(pageSize, MAX_PAGE_SIZE)`, validate category exists before create.
-* Dependency impact: Uses CourseCategoryMapper.
-* Risk point: None.
-* Rollback method: `git restore backend/src/main/java/com/institution/coursemanager/service/impl/CourseServiceImpl.java`
-* Pitfall: UNKNOWN.
-
-* Path: `backend/src/main/java/com/institution/coursemanager/service/impl/EnrollmentServiceImpl.java`
-* Change type: MODIFY
-* Key change: Added page size limit (MAX_PAGE_SIZE=100).
-* Core logic: `Math.min(pageSize, MAX_PAGE_SIZE)`.
-* Dependency impact: None.
-* Risk point: None.
-* Rollback method: `git restore backend/src/main/java/com/institution/coursemanager/service/impl/EnrollmentServiceImpl.java`
-* Pitfall: UNKNOWN.
-
-* Path: `backend/src/main/resources/application.yml`
-* Change type: MODIFY
-* Key change: Environment variables for JWT secret and DB credentials.
-* Core logic: `${JWT_SECRET:...}`, `${DB_USERNAME:root}`, `${DB_PASSWORD:root}`.
-* Dependency impact: None.
-* Risk point: Default values used if env vars not set.
-* Rollback method: `git restore backend/src/main/resources/application.yml`
 * Pitfall: UNKNOWN.
 
 ---
@@ -409,54 +588,19 @@
 * Build: PASS
 * Typecheck: NOT RUN (no TypeScript)
 * Lint: PASS
-* Unit tests: PASS (17 tests)
+* Unit tests: PASS (85 tests, 0 failures)
 * Integration tests: NOT RUN
 * Contract tests: NOT RUN
 * Manual verification: NOT RUN
-* Current blocker: Frontend not connected to backend API
+* Current blocker: End-to-end verification pending
 * Core error: None
 
 ---
 
 ## 4. Open TODOs and rollback notes
 
-* DONE: JWT secret via environment variable
-* Status: COMPLETED
-* Target files: `backend/src/main/resources/application.yml`
-* Verification: `secret: ${JWT_SECRET:course-manager-jwt-secret-key-2026-must-be-at-least-256-bits}`
-
-* DONE: Database credentials via environment variable
-* Status: COMPLETED
-* Target files: `backend/src/main/resources/application.yml`
-* Verification: `username: ${DB_USERNAME:root}`, `password: ${DB_PASSWORD:root}`
-
-* DONE: Course creation validates categoryId
-* Status: COMPLETED
-* Target files: `backend/src/main/java/com/institution/coursemanager/service/impl/CourseServiceImpl.java`
-
-* DONE: Course deletion checks associated orders
-* Status: COMPLETED
-* Target files: `backend/src/main/java/com/institution/coursemanager/service/impl/CourseServiceImpl.java`
-
-* TODO: Connect frontend login to real backend API
-* Priority: HIGH
-* Required prerequisite: Backend login API working
-* Target files: `frontend/src/views/admin/LoginPage.vue`
-* Risk: Auth bypass if mock token remains
-* Suggested action: Replace mock token with `api/admin.js` login call
-* Rollback files: `frontend/src/views/admin/LoginPage.vue`
-* Rollback command: `git restore frontend/src/views/admin/LoginPage.vue`
-* Post-rollback verification: Manual login test
-
-* TODO: Connect all frontend pages to real backend API
-* Priority: HIGH
-* Required prerequisite: All backend APIs working
-* Target files: All `frontend/src/views/**/*.vue`
-* Risk: Mock data shows incorrect information
-* Suggested action: Replace mock data with API calls using `api/public.js` and `api/admin.js`
-* Rollback files: All frontend view files
-* Rollback command: `git restore frontend/src/views/`
-* Post-rollback verification: Manual UI test
+* ~~TODO: Connect frontend login to real backend API~~ ✅ DONE
+* ~~TODO: Connect all frontend pages to real backend API~~ ✅ DONE
 
 * TODO: Add logging to AdminAuthInterceptor catch block
 * Priority: LOW
@@ -468,19 +612,9 @@
 * Rollback command: `git restore backend/src/main/java/com/institution/coursemanager/interceptor/AdminAuthInterceptor.java`
 * Post-rollback verification: `mvn compile`
 
-* TODO: Phase 9 backend tests (Controller tests)
+* TODO: Phase 10 end-to-end verification (frontend-backend)
 * Priority: HIGH
-* Required prerequisite: All controllers implemented
-* Target files: `backend/src/test/java/com/institution/coursemanager/controller/`
-* Risk: Untested endpoints
-* Suggested action: Create test classes per controller
-* Rollback files: Test files only
-* Rollback command: `rm -rf backend/src/test/java/com/institution/coursemanager/controller/`
-* Post-rollback verification: `mvn test`
-
-* TODO: Phase 10 integration tests (frontend-backend)
-* Priority: HIGH
-* Required prerequisite: Frontend connected to backend
+* Required prerequisite: Frontend connected to backend ✅
 * Target files: Manual test
 * Risk: Untested integration
 * Suggested action: Start both servers, test full flow
@@ -503,7 +637,7 @@
 * Command: `cd backend && mvn test`
 * Result: PASS
 * Failure reason: None
-* Related files: `EnrollmentServiceImplTest.java`
+* Related files: All backend test files
 * Blocking next phase: NO
 
 * Tool: pnpm lint
@@ -524,37 +658,22 @@
 
 ## 6. List next phase detailed planning
 
-* Next phase goal: Connect frontend to real backend API (Phase 10 integration)
-* Entry point: `frontend/src/views/admin/LoginPage.vue`
-* Input prerequisite: Backend server running on port 8080
-* Step 1: Modify LoginPage.vue to call `api/admin.js` login function
-* Step 2: Remove mock token, store real JWT from response
-* Step 3: Modify DashboardPage.vue to call `api/admin.js` overview function
-* Step 4: Modify CourseManagePage.vue to call course CRUD APIs
-* Step 5: Modify EnrollmentManagePage.vue to call enrollment APIs
-* Step 6: Modify FinancePage.vue to call finance APIs
-* Step 7: Modify public pages to call `api/public.js` APIs
-* Target files: All `frontend/src/views/**/*.vue`
-* Expected change: All pages use real API data instead of mock
-* Verification method: `cd frontend && pnpm build`, manual UI test
-* Acceptance criteria: All pages load data from backend, no mock data
-* Risk control: Keep mock data as fallback during development
-* Forbidden action: Commit mock data in production code
+* ~~Next phase goal: Connect frontend to real backend API (Phase 10 integration)~~ ✅ DONE
 
-* Next phase goal: Write backend tests (Phase 9)
-* Entry point: `backend/src/test/java/com/institution/coursemanager/`
-* Input prerequisite: All controllers implemented
-* Step 1: Create `AdminAuthControllerTest.java` (TC-LOGIN-01 ~ TC-LOGIN-08)
-* Step 2: Create `AdminCourseControllerTest.java` (TC-COURSE-01 ~ TC-COURSE-14)
-* Step 3: Create `PublicCourseControllerTest.java` (TC-COURSE-15 ~ TC-COURSE-19)
-* Step 4: Create `PublicEnrollmentControllerTest.java` (TC-ENROLL-01 ~ TC-ENROLL-10)
-* Step 5: Create `AdminEnrollmentControllerTest.java` (TC-STATUS-01 ~ TC-STATUS-10)
-* Step 6: Create `AdminPaymentControllerTest.java` (TC-PAY-01 ~ TC-PAY-10)
-* Step 7: Create `AdminDashboardControllerTest.java` (TC-DASH-01 ~ TC-DASH-07)
-* Step 8: Create `AdminFinanceControllerTest.java` (TC-FIN-01 ~ TC-FIN-04)
-* Target files: `backend/src/test/java/com/institution/coursemanager/controller/`
-* Expected change: All test cases pass
-* Verification method: `cd backend && mvn test`
-* Acceptance criteria: All tests pass, 0 failures
-* Risk control: Use `@SpringBootTest` with test profile
-* Forbidden action: Delete tests to make build pass
+* Next phase goal: End-to-end verification (Phase 10.7)
+* Entry point: Both frontend and backend servers
+* Input prerequisite: Backend server running on port 8080, Frontend dev server on 5173
+* Step 1: Start backend: `cd backend && mvn spring-boot:run`
+* Step 2: Start frontend: `cd frontend && pnpm dev`
+* Step 3: Test admin login flow (admin/admin123)
+* Step 4: Test course CRUD operations
+* Step 5: Test enrollment management
+* Step 6: Test payment registration
+* Step 7: Test public pages (course list, detail, enrollment)
+* Step 8: Verify dashboard and finance summary
+* Target files: Manual test
+* Expected change: All features work end-to-end
+* Verification method: Manual UI test
+* Acceptance criteria: Full business flow works
+* Risk control: N/A
+* Forbidden action: N/A

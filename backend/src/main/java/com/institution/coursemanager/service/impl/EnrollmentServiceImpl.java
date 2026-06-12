@@ -25,6 +25,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 @Service
@@ -45,6 +46,7 @@ public class EnrollmentServiceImpl extends ServiceImpl<EnrollmentOrderMapper, En
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public EnrollmentSubmitVO submitEnrollment(EnrollmentSubmitDTO dto) {
         validateSubmitDTO(dto);
         Course course = courseMapper.selectById(dto.getCourseId());
@@ -78,6 +80,7 @@ public class EnrollmentServiceImpl extends ServiceImpl<EnrollmentOrderMapper, En
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void updateEnrollmentStatus(Long orderId, EnrollmentStatusDTO dto) {
         if (dto == null || !StringUtils.hasText(dto.getEnrollmentStatus())) {
             throw new ValidationException("报名状态不能为空");
