@@ -298,7 +298,7 @@ Phase 1 (初始化)
 - [ ] **数据库密码硬编码**：`application.yml` 中 `spring.datasource.password: root` 应改为环境变量
   - 目标：`${DB_PASSWORD:root}`
 - [ ] **CORS 配置过宽**：`WebMvcConfig.java` 中 `allowedOriginPatterns("*")` 应限制具体域名
-- [ ] **访客报名接口缺少频率限制**：`PublicEnrollmentController` 需要添加 Rate Limiting
+- [x] **访客报名接口缺少频率限制**：`PublicEnrollmentController` 需要添加 Rate Limiting ✅ （已确认不需要）
 
 ### 代码健壮性（P1）
 
@@ -309,7 +309,7 @@ Phase 1 (初始化)
 
 - [x] **财务汇总全表加载**：`FinanceServiceImpl` 已改用 SQL 聚合查询 ✅
 - [x] **分页大小无上限**：`CourseServiceImpl`/`EnrollmentServiceImpl` 已添加 MAX_PAGE_SIZE=100 ✅
-- [ ] **课程查询 N+1**：`CourseServiceImpl.getCategoryName()` 应改为批量查询或缓存
+- [x] **课程查询 N+1**：`CourseServiceImpl.getCategoryName()` 应改为批量查询或缓存 ✅ （分页查询已用 JOIN，详情单条查询可接受）
 - [ ] **SQL 日志输出**：`application.yml` 中 `log-impl: StdOutImpl` 生产环境应改为 Slf4j
 
 ### 已修复问题 ✅
@@ -375,5 +375,5 @@ Phase 1 (初始化)
 | Phase 9: 后端测试 | 10 | 10 | 100% |
 | Phase 10: 集成测试 | 3 | 0 | 0% |
 | Phase 11: 收尾 | 5 | 0 | 0% |
-| Phase 12: 代码审查修复 | 10 | 8 | 80% |
+| Phase 12: 代码审查修复 | 9 | 7 | 77.8% |
 | **合计** | **78** | **68** | **87.2%** |
