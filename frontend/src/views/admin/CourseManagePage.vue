@@ -119,6 +119,20 @@
         <el-form-item label="报名费" prop="registrationFee">
           <el-input-number v-model="courseForm.registrationFee" :min="0" :precision="2" style="width: 100%" />
         </el-form-item>
+        <el-form-item label="课程封面">
+          <div class="cover-upload-wrap">
+            <div v-if="courseForm.coverImage" class="cover-preview-box">
+              <img :src="courseForm.coverImage" alt="课程封面" />
+              <span class="cover-remove" @click="courseForm.coverImage = ''">×</span>
+            </div>
+            <label v-else class="cover-upload-trigger">
+              <input type="file" accept="image/jpeg,image/png,image/gif,image/webp" hidden @change="handleCoverChange" />
+              <el-icon :size="24"><Plus /></el-icon>
+              <span>上传封面</span>
+            </label>
+            <span class="cover-tip">支持 jpg/png/gif/webp，≤5MB</span>
+          </div>
+        </el-form-item>
         <el-form-item label="课程描述" prop="description">
           <el-input v-model="courseForm.description" type="textarea" :rows="3" placeholder="请输入课程描述" />
         </el-form-item>
@@ -141,7 +155,8 @@ import {
   createCourse,
   updateCourse,
   onlineCourse,
-  offlineCourse
+  offlineCourse,
+  uploadCourseImage
 } from '@/api/admin'
 import { courseStatusMap, courseStatusTone } from '@/utils/format'
 
@@ -166,6 +181,7 @@ const emptyForm = () => ({
   categoryId: null,
   title: '',
   subtitle: '',
+  coverImage: '',
   teacherName: '',
   price: 0,
   registrationFee: 0,
@@ -247,6 +263,7 @@ function openEditDialog(course) {
     categoryId: course.categoryId,
     title: course.title,
     subtitle: course.subtitle || '',
+    coverImage: course.coverImage || '',
     teacherName: course.teacherName || '',
     price: course.price != null ? Number(course.price) : 0,
     registrationFee: course.registrationFee != null ? Number(course.registrationFee) : 0,
@@ -294,6 +311,35 @@ const handleOnline = async (id) => {
     }
   } catch (e) {
     ElMessage.error(e.message || '操作失败')
+  }
+}
+
+// 上传封面图片
+async function handleCoverChange(e) {
+  const file = e.target.files?.[0]
+  if (!file) return
+  // 前端校验
+  const allowed = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+  if (!allowed.includes(file.type)) {
+    ElMessage.warning('仅支持 jpg/png/gif/webp 格式')
+    e.target.value = ''
+    return
+  }
+  if (file.size > 5 * 1024 * 1024) {
+    ElMessage.warning('文件大小不能超过5MB')
+    e.target.value = ''
+    return
+  }
+  try {
+    const res = await uploadCourseImage(file)
+    if (res.code === 200) {
+      courseForm.value.coverImage = res.data
+      ElMessage.success('图片上传成功')
+    }
+  } catch (err) {
+    ElMessage.error(err.message || '图片上传失败')
+  } finally {
+    e.target.value = ''
   }
 }
 
@@ -490,6 +536,70 @@ th {
   display: flex;
   justify-content: flex-end;
   padding: 4px 0;
+}
+
+.cover-upload-wrap {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.cover-preview-box {
+  position: relative;
+  width: 160px;
+  height: 100px;
+  border-radius: 8px;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+}
+
+.cover-preview-box img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.cover-remove {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.cover-upload-trigger {
+  width: 160px;
+  height: 100px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px dashed var(--color-border);
+  border-radius: 8px;
+  cursor: pointer;
+  color: var(--color-text-muted);
+  background: var(--color-surface-muted);
+  transition: border-color 0.2s;
+}
+
+.cover-upload-trigger:hover {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.cover-tip {
+  font-size: 12px;
+  color: var(--color-text-muted);
 }
 
 @media (max-width: 900px) {

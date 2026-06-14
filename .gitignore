@@ -45,3 +45,6 @@ logs/
 *.db
 *.sqlite
 .claude/setting.local.json
+
+# === Uploads ===
+uploads/

@@ -3,6 +3,7 @@ package com.institution.coursemanager.controller.admin;
 import com.institution.coursemanager.dto.CourseCreateDTO;
 import com.institution.coursemanager.dto.CourseUpdateDTO;
 import com.institution.coursemanager.service.CourseService;
+import com.institution.coursemanager.util.FileUploadUtil;
 import com.institution.coursemanager.vo.AdminCourseVO;
 import com.institution.coursemanager.vo.CategoryVO;
 import com.institution.coursemanager.vo.PageResult;
@@ -10,6 +11,7 @@ import com.institution.coursemanager.vo.Result;
 import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * 管理员端 - 课程管理
@@ -29,6 +32,18 @@ public class AdminCourseController {
 
     @Autowired
     private CourseService courseService;
+
+    @Value("${app.upload.dir:uploads}")
+    private String uploadDir;
+
+    /**
+     * 上传课程封面图片
+     */
+    @PostMapping("/upload-image")
+    public Result<String> uploadImage(@RequestParam("file") MultipartFile file) {
+        String path = FileUploadUtil.upload(file, uploadDir, "courses");
+        return Result.success(path);
+    }
 
     /**
      * 课程列表（支持关键字、状态和分类筛选）
