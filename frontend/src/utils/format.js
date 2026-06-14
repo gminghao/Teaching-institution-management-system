@@ -75,3 +75,21 @@ export function courseStatusTone(status) {
   if (status === 'OFFLINE') return 'danger'
   return 'info'
 }
+
+
+/**
+ * 报名状态信息（标签 + 色调）
+ * @param {string} status
+ * @returns {{ label: string, tone: string }}
+ */
+export function enrollmentStatusInfo(status) {
+  const map = {
+    PENDING: { label: '待处理', tone: 'warning' },
+    CONTACTED: { label: '已联系', tone: 'info' },
+    ENROLLED: { label: '已报名', tone: 'success' },
+    PAID: { label: '已缴费', tone: 'success' },
+    UNPAID: { label: '未缴费', tone: 'danger' },
+    CANCELLED: { label: '已取消', tone: 'danger' }
+  }
+  return map[status] || { label: status || '未知', tone: 'info' }
+}
