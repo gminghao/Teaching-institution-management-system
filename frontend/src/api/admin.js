@@ -43,6 +43,14 @@ export function getCategories() {
   return request.get('/admin/courses/categories')
 }
 
+export function uploadCourseImage(file) {
+  const formData = new FormData()
+  formData.append('file', file)
+  return request.post('/admin/courses/upload-image', formData, {
+    headers: { 'Content-Type': 'multipart/form-data' }
+  })
+}
+
 // ========== 报名管理 ==========
 export function getEnrollments(params) {
   return request.get('/admin/enrollments', { params })
